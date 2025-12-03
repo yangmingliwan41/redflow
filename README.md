@@ -47,7 +47,7 @@
 #### 3. 生成营销文案和风格化图片
 ![图生图结果](./docs/images/image-to-image-result.png)
 
-
+</div>
 
 ## 技术栈
 
