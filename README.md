@@ -19,6 +19,48 @@
 1. **文本生成图文**：输入主题，AI 生成小红书图文大纲和配图建议，并批量生成海报图片
 2. **图生图**：上传产品图片，AI 分析并生成营销文案和风格化图片
 
+## 效果展示
+
+### 文本生成图文模式
+
+<div align="center">
+
+#### 1. 输入主题生成大纲
+![文本生成大纲](./docs/images/text-to-outline.png)
+
+#### 2. 编辑大纲和配图建议
+![编辑大纲](./docs/images/edit-outline.png)
+
+#### 3. 批量生成海报图片
+![生成结果](./docs/images/text-result.png)
+
+</div>
+
+### 图生图模式
+
+<div align="center">
+
+#### 1. 上传产品图片
+![上传图片](./docs/images/upload-image.png)
+
+#### 2. AI分析产品特征
+![产品分析](./docs/images/image-analysis.png)
+
+#### 3. 生成营销文案和风格化图片
+![图生图结果](./docs/images/image-to-image-result.png)
+
+</div>
+
+### 历史记录
+
+<div align="center">
+
+![历史记录](./docs/images/history-view.png)
+
+</div>
+
+> 💡 **提示**: 以上示例图片需要您自行添加。将截图保存到 `docs/images/` 目录，并按照上述命名规范命名即可。
+
 ## 技术栈
 
 - **前端框架**: Vue 3 + TypeScript
