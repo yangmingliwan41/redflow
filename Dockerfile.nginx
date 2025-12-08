@@ -10,8 +10,12 @@ WORKDIR /app
 # 复制依赖文件
 COPY package*.json ./
 
-# 安装依赖
-RUN npm ci
+# 安装依赖（修复esbuild ETXTBSY错误）
+# 清理npm缓存，使用npm install代替npm ci，添加重试机制
+RUN npm cache clean --force && \
+    npm install --legacy-peer-deps --prefer-offline --no-audit || \
+    (sleep 2 && npm install --legacy-peer-deps --prefer-offline --no-audit) || \
+    (sleep 5 && npm install --legacy-peer-deps --prefer-offline --no-audit)
 
 # 复制源代码
 COPY . .
