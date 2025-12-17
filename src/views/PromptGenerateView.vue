@@ -208,7 +208,8 @@ const styleExamples = computed(() => {
   return Object.values(DEFAULT_STYLE_PROMPTS).map(style => ({
     id: style.id,
     name: style.name,
-    imageUrl: `/src/assets/style-examples/${style.id}.png`, // 示例图片路径
+    // 使用 public 目录路径，Vite 会将 public 目录中的文件原样复制到构建后的根目录
+    imageUrl: `/style-examples/${style.id}.png`,
     prompt: style.defaultPrompt.split('\n')[0] // 使用提示词的第一行作为示例
   }))
 })

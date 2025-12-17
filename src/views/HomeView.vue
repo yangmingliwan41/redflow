@@ -329,7 +329,8 @@ const styleExamples = computed(() => {
   return getAllStyleConfigs().map(style => ({
     id: style.id,
     name: style.name,
-    imageUrl: `/src/assets/style-examples/${style.id}.png`, // 示例图片路径
+    // 使用 public 目录路径，Vite 会将 public 目录中的文件原样复制到构建后的根目录
+    imageUrl: `/style-examples/${style.id}.png`,
     // 这里使用简短的中文描述作为卡片文案，而不是长提示词的第一行
     prompt: style.description
   }))
