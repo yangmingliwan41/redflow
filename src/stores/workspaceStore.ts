@@ -20,6 +20,7 @@ interface WorkspaceState {
 const STORAGE_KEY = 'workspaces'
 const RECENT_KEY = 'recent_workspaces'
 const MAX_RECENT = 20
+const MAX_WORKSPACES = 100 // 最大工作区数量，防止存储超限
 
 export const useWorkspaceStore = defineStore('workspace', {
   state: (): WorkspaceState => ({
@@ -293,10 +294,80 @@ export const useWorkspaceStore = defineStore('workspace', {
 
     /**
      * 保存工作区到localStorage
+     * 处理存储配额超限问题
      */
     async saveWorkspaces(): Promise<void> {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.workspaces))
+        // 限制工作区数量，保留最新的和收藏的
+        let workspacesToSave = [...this.workspaces]
+        
+        // 如果超过最大数量，删除最旧的非收藏工作区
+        if (workspacesToSave.length > MAX_WORKSPACES) {
+          // 分离收藏和非收藏工作区
+          const favorites = workspacesToSave.filter(w => w.isFavorite)
+          const nonFavorites = workspacesToSave.filter(w => !w.isFavorite)
+          
+          // 按更新时间排序，保留最新的
+          nonFavorites.sort((a, b) => b.updatedAt - a.updatedAt)
+          
+          // 计算需要保留的数量
+          const keepCount = MAX_WORKSPACES - favorites.length
+          const keepNonFavorites = nonFavorites.slice(0, Math.max(0, keepCount))
+          
+          workspacesToSave = [...favorites, ...keepNonFavorites]
+          
+          logger.warn(`工作区数量超过限制(${MAX_WORKSPACES})，已删除 ${this.workspaces.length - workspacesToSave.length} 个最旧的工作区`)
+          
+          // 更新状态
+          this.workspaces = workspacesToSave
+        }
+        
+        // 尝试保存，如果失败则逐步减少数据
+        const trySetItem = async (workspaces: Workspace[], attempt: number = 0): Promise<void> => {
+          try {
+            const jsonStr = JSON.stringify(workspaces)
+            const sizeInMB = (new Blob([jsonStr]).size / 1024 / 1024).toFixed(2)
+            logger.debug(`保存工作区到localStorage，数量: ${workspaces.length}, 大小: ${sizeInMB}MB`)
+            
+            localStorage.setItem(STORAGE_KEY, jsonStr)
+            logger.info('✅ 工作区保存成功！')
+          } catch (error: any) {
+            if (error.name === 'QuotaExceededError' || error.code === 22 || error.code === 1014) {
+              logger.warn(`存储配额超限 (尝试 ${attempt + 1})，当前工作区数量: ${workspaces.length}`)
+              
+              // 限制最大尝试次数
+              if (attempt >= 5) {
+                logger.error('达到最大尝试次数，无法保存工作区')
+                throw new Error('存储空间不足，无法保存工作区。请删除一些旧工作区或清理浏览器缓存。')
+              }
+              
+              // 如果还有多个工作区，删除最旧的非收藏工作区
+              if (workspaces.length > 1) {
+                const favorites = workspaces.filter(w => w.isFavorite)
+                const nonFavorites = workspaces.filter(w => !w.isFavorite)
+                
+                // 按更新时间排序，删除最旧的
+                nonFavorites.sort((a, b) => a.updatedAt - b.updatedAt)
+                
+                // 至少保留收藏的工作区，如果非收藏工作区还有多个，删除最旧的一个
+                if (nonFavorites.length > 0) {
+                  const reduced = [...favorites, ...nonFavorites.slice(1)]
+                  logger.warn(`删除最旧的工作区: ${nonFavorites[0].name}，剩余: ${reduced.length} 个`)
+                  await trySetItem(reduced, attempt + 1)
+                } else {
+                  // 如果只剩下收藏的工作区，但仍然超限，说明单个工作区数据太大
+                  throw new Error('存储空间不足，单个工作区数据过大。请清理工作区中的大文件或联系管理员。')
+                }
+              } else {
+                throw new Error('存储空间不足，无法保存工作区。请清理浏览器缓存。')
+              }
+            } else {
+              throw error
+            }
+          }
+        }
+        
+        await trySetItem(workspacesToSave)
       } catch (error: any) {
         logger.error('保存工作区失败:', error)
         throw error
