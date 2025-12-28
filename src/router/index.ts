@@ -153,7 +153,7 @@ const router = createRouter({
 })
 
 // 受保护的路由（生成过程中不能访问的路由）
-const protectedRoutes = ['/', '/workspace', '/manage/history', '/settings', '/create/prompt']
+const protectedRoutes = ['/', '/workspace', '/manage/history', '/settings', '/create/prompt', '/manage/drafts']
 
 // 生成流程路由（生成过程中可以访问的路由）
 const generationFlowRoutes = ['/text-outline', '/text-generate', '/text-result', '/create']
@@ -199,6 +199,14 @@ router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, n
       // 隐藏导航守卫提示（如果正在显示）
       store.hideNavigationGuardModal()
       next()
+      return
+    }
+    
+    // 检查是否是工作区相关路由（带 workspace 参数）
+    const hasWorkspaceParam = to.query.workspace !== undefined
+    if (hasWorkspaceParam) {
+      store.showNavigationGuardModal()
+      next(false)
       return
     }
     

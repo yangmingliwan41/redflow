@@ -26,7 +26,9 @@ defineProps<Props>()
 
 <style scoped>
 .ui-page-header {
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-3xl);
+  position: relative;
+  z-index: 10;
 }
 
 .ui-page-header__content {
@@ -35,11 +37,15 @@ defineProps<Props>()
   justify-content: space-between;
   gap: var(--spacing-lg);
   margin-bottom: var(--spacing-md);
+  position: relative;
+  z-index: 10;
 }
 
 .ui-page-header__title-section {
   flex: 1;
   min-width: 0;
+  position: relative;
+  z-index: 10;
 }
 
 .ui-page-header__title {
@@ -58,6 +64,8 @@ defineProps<Props>()
   margin: 0;
   line-height: var(--line-height-relaxed);
   opacity: 0.8;
+  position: relative;
+  z-index: 10;
 }
 
 .ui-page-header__actions {

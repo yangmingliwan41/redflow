@@ -152,6 +152,13 @@
 
     <!-- 底部操作区 -->
     <div class="sidebar-footer" :class="{ 'collapsed': isCollapsed }">
+      <button class="footer-btn" :title="isCollapsed ? '历史记录' : ''" @click="$router.push('/manage/history')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 3h18v18H3zM7 3v18M3 7h18"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+        <span v-if="!isCollapsed">历史记录</span>
+      </button>
       <button class="footer-btn" :title="isCollapsed ? '新手引导' : ''" @click="handleShowGuide">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"></circle>

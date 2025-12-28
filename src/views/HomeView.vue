@@ -363,6 +363,7 @@ import CaseDetailModal from '../components/CaseDetailModal.vue'
 import ContinueEditModal from '../components/ContinueEditModal.vue'
 import GuideModal from '../components/GuideModal.vue'
 import { useTextGeneratorStore } from '../stores/textGenerator'
+import { useWorkspaceStore } from '../stores/workspaceStore'
 import { PageContainer, PageHeader } from '../components/layout'
 import { getStylePrompt, getAllStyleConfigs } from '../config/stylePrompts'
 import { useCaseData } from '../composables/useCaseData'
@@ -373,6 +374,7 @@ import { useToast } from '../composables/useToast'
 const router = useRouter()
 const route = useRoute()
 const textStore = useTextGeneratorStore()
+const workspaceStore = useWorkspaceStore()
 
 interface Props {
   mode?: 'text' | 'image' | 'prompt'
@@ -615,11 +617,189 @@ const handleShowGuide = () => {
   showGuideModal.value = true
 }
 
-onMounted(() => {
+// 从工作区恢复数据（仅在文本生成模式）
+const restoreWorkspaceData = async () => {
+  // 只在文本生成模式且不在创建视图时恢复
+  if (mode.value !== 'text' || !isInCreateView.value) return
+  
+  const workspaceId = route.query.workspace as string
+  if (!workspaceId) return
+
+  try {
+    await workspaceStore.loadWorkspaces()
+    const workspace = workspaceStore.getWorkspaceById(workspaceId)
+    
+    if (!workspace) {
+      console.warn('工作区不存在:', workspaceId)
+      return
+    }
+
+    // 设置当前工作区
+    workspaceStore.setCurrentWorkspace(workspace)
+
+    // 优先从 metadata.draftData 恢复（草稿数据）
+    if (workspace.metadata?.draftData) {
+      restoreFromDraftData(workspace.metadata.draftData)
+      return
+    }
+
+    // 如果有 relatedId，尝试从历史记录恢复
+    if (workspace.relatedId) {
+      const { getUserHistory } = await import('../services/storage/history')
+      const currentUser = getCurrentUser()
+      if (currentUser) {
+        const history = getUserHistory(currentUser.id)
+        const historyItem = history.find(h => h.id === workspace.relatedId)
+        
+        if (historyItem) {
+          restoreFromHistoryItem(historyItem)
+          return
+        }
+      }
+    }
+
+    // 如果没有历史记录，尝试从 metadata.historyItem 恢复
+    if (workspace.metadata?.historyItem) {
+      restoreFromHistoryItem(workspace.metadata.historyItem as GeneratedResult)
+    }
+  } catch (error) {
+    console.error('恢复工作区数据失败:', error)
+  }
+}
+
+// 从草稿数据恢复
+const restoreFromDraftData = (draftData: any) => {
+  if (!draftData) return
+
+  // 恢复基础数据
+  if (draftData.topic) {
+    topic.value = draftData.topic
+    textStore.setTopic(draftData.topic)
+  }
+  
+  if (draftData.projectName) {
+    textStore.setProjectName(draftData.projectName)
+  }
+
+  if (draftData.projectDescription) {
+    textStore.projectDescription = draftData.projectDescription
+  }
+
+  if (draftData.style) {
+    textStore.setStyle(draftData.style, draftData.stylePrompt)
+  }
+
+  if (draftData.headImageMode !== undefined) {
+    textStore.setHeadImageMode(draftData.headImageMode)
+  }
+
+  // 恢复大纲和页面数据
+  if (draftData.outline) {
+    const pages = draftData.outline.pages || []
+    if (pages.length > 0) {
+      textStore.setOutline(draftData.outline.raw || '', pages, draftData.outline.visualGuide)
+      
+      // 恢复图片数据
+      if (draftData.images && draftData.images.length > 0) {
+        textStore.images = draftData.images
+      }
+      
+      // 恢复进度
+      if (draftData.progress) {
+        textStore.progress = draftData.progress
+      }
+      
+      // 恢复阶段
+      if (draftData.stage) {
+        textStore.stage = draftData.stage
+      }
+      
+      // 根据阶段跳转
+      if (draftData.stage === 'result' && draftData.recordId) {
+        textStore.recordId = draftData.recordId
+        setTimeout(() => {
+          router.push('/text-result')
+        }, 100)
+      } else if (draftData.stage === 'outline' && draftData.outline.raw) {
+        setTimeout(() => {
+          router.push('/text-outline')
+        }, 100)
+      }
+    }
+  }
+}
+
+// 从历史记录项恢复数据
+const restoreFromHistoryItem = (historyItem: GeneratedResult) => {
+  if (!historyItem) return
+
+  // 恢复基础数据
+  if (historyItem.topic) {
+    topic.value = historyItem.topic
+    textStore.setTopic(historyItem.topic)
+  }
+  
+  if (historyItem.projectName) {
+    textStore.setProjectName(historyItem.projectName)
+  }
+
+  if (historyItem.projectDescription) {
+    textStore.projectDescription = historyItem.projectDescription
+  }
+
+  // 恢复大纲和页面数据
+  if (historyItem.outline && historyItem.pages) {
+    const pages = historyItem.pages.map(p => ({
+      index: p.index,
+      type: p.title === '封面' ? 'cover' : 'content',
+      content: p.content,
+      imageUrl: p.imageUrl,
+      imagePrompt: p.imagePrompt
+    }))
+    
+    textStore.setOutline(historyItem.outline, pages)
+    
+    // 恢复图片数据
+    if (historyItem.pages.length > 0) {
+      textStore.images = historyItem.pages.map((page) => ({
+        index: page.index,
+        url: page.imageUrl || '',
+        status: page.imageUrl ? 'done' : 'error'
+      }))
+      
+      textStore.progress = {
+        current: historyItem.pages.filter(p => p.imageUrl).length,
+        total: historyItem.pages.length,
+        status: historyItem.pages.every(p => p.imageUrl) ? 'done' : 'idle'
+      }
+      
+      // 如果有完整的图片，跳转到结果页
+      if (historyItem.pages.every(p => p.imageUrl)) {
+        textStore.stage = 'result'
+        textStore.recordId = historyItem.id
+        // 延迟跳转，确保数据已恢复
+        setTimeout(() => {
+          router.push('/text-result')
+        }, 100)
+      } else if (historyItem.outline) {
+        // 如果有大纲但图片未完成，跳转到大纲页
+        textStore.stage = 'outline'
+        setTimeout(() => {
+          router.push('/text-outline')
+        }, 100)
+      }
+    }
+  }
+}
+
+onMounted(async () => {
   // 检查是否需要显示引导
   if (checkShouldShowGuide()) {
     showGuideModal.value = true
   }
+  
+  // 恢复工作区数据（如果是文本生成模式）
+  await restoreWorkspaceData()
   
   // 监听 storage 事件（跨标签页）
   window.addEventListener('storage', (e) => {
@@ -633,6 +813,13 @@ onMounted(() => {
   
   // 监听显示引导事件
   window.addEventListener('redflow:showGuide', handleShowGuide)
+})
+
+// 监听路由变化，如果 workspace 参数变化，重新恢复数据
+watch(() => route.query.workspace, async () => {
+  if (mode.value === 'text' && isInCreateView.value) {
+    await restoreWorkspaceData()
+  }
 })
 
 onUnmounted(() => {
@@ -1240,20 +1427,19 @@ const clearAll = () => {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   min-height: calc(100vh - 200px);
   max-width: 1200px;
   margin: 0 auto;
+  width: 100%;
 }
 
 /* 让 PageHeader 标题在左上角 */
 :deep(.ui-page-header) {
   text-align: left;
   width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
+  margin-bottom: var(--spacing-3xl);
 }
 
 :deep(.ui-page-header__content) {
@@ -1287,12 +1473,31 @@ const clearAll = () => {
 .mode-selector {
   display: flex;
   gap: 16px;
+  margin-top: 0;
   margin-bottom: 32px;
   justify-content: center;
   width: 100%;
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
+  z-index: 1;
+  clear: both;
+}
+
+/* 确保在小屏幕上也有足够的间距 */
+@media (max-width: 1024px) {
+  .mode-selector {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .mode-selector {
+    margin-top: 0;
+    flex-direction: column;
+    gap: 12px;
+  }
 }
 
 .mode-btn {

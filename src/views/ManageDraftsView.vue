@@ -25,16 +25,56 @@
           v-for="draft in drafts"
           :key="draft.id"
           class="draft-card"
-          @click="handleDraftClick(draft)"
         >
-          <div class="draft-name">{{ draft.name }}</div>
-          <div class="draft-meta">
-            <span>{{ getTypeLabel(draft.type) }}</span>
-            <span>{{ formatTime(draft.updatedAt) }}</span>
+          <div class="draft-card-content" @click="handleDraftClick(draft)">
+            <div class="draft-name">{{ draft.name }}</div>
+            <div class="draft-meta">
+              <span>{{ getTypeLabel(draft.type) }}</span>
+              <span>{{ formatTime(draft.updatedAt) }}</span>
+            </div>
           </div>
+          <button
+            class="draft-delete-btn"
+            @click.stop="handleDeleteDraft(draft)"
+            :title="`删除 ${draft.name}`"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
+
+    <!-- 删除确认弹窗 -->
+    <Modal
+      v-model="deleteModalVisible"
+      title="确认删除"
+      size="sm"
+      :close-on-backdrop="false"
+    >
+      <div class="delete-confirm-content">
+        <div class="delete-confirm-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </div>
+        <p class="delete-confirm-message">
+          确定要删除 <strong>"{{ deletingDraftName }}"</strong> 吗？
+        </p>
+        <p class="delete-confirm-warning">此操作不可恢复，请谨慎操作。</p>
+      </div>
+      <template #footer>
+        <div class="delete-confirm-actions">
+          <Button variant="secondary" @click="cancelDelete">
+            取消
+          </Button>
+          <Button variant="danger" @click="confirmDelete">
+            确认删除
+          </Button>
+        </div>
+      </template>
+    </Modal>
   </PageContainer>
 </template>
 
@@ -46,6 +86,7 @@ import type { Workspace, WorkspaceType } from '../types/workspace'
 import PageContainer from '../components/layout/PageContainer.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
 import Button from '../components/ui/Button.vue'
+import Modal from '../components/ui/Modal.vue'
 
 const router = useRouter()
 const workspaceStore = useWorkspaceStore()
@@ -85,6 +126,44 @@ const handleDraftClick = (draft: Workspace) => {
     router.push(`/create/image?workspace=${draft.id}`)
   } else if (draft.type === 'prompt') {
     router.push(`/create/prompt?workspace=${draft.id}`)
+  } else if (draft.type === 'plan') {
+    router.push(`/plan/content?workspace=${draft.id}`)
+  } else if (draft.type === 'requirement') {
+    router.push(`/plan/requirement?workspace=${draft.id}`)
+  } else if (draft.type === 'calendar') {
+    router.push(`/plan/calendar?workspace=${draft.id}`)
+  }
+}
+
+// 删除相关状态
+const deleteModalVisible = ref(false)
+const deletingDraft = ref<Workspace | null>(null)
+const deletingDraftName = ref('')
+
+const handleDeleteDraft = (draft: Workspace) => {
+  deletingDraft.value = draft
+  deletingDraftName.value = draft.name
+  deleteModalVisible.value = true
+}
+
+const cancelDelete = () => {
+  deleteModalVisible.value = false
+  deletingDraft.value = null
+  deletingDraftName.value = ''
+}
+
+const confirmDelete = async () => {
+  if (!deletingDraft.value) {
+    cancelDelete()
+    return
+  }
+
+  try {
+    await workspaceStore.deleteWorkspace(deletingDraft.value.id)
+    cancelDelete()
+  } catch (error: any) {
+    console.error('删除草稿失败:', error)
+    alert('删除失败：' + (error.message || '未知错误'))
   }
 }
 
@@ -138,18 +217,66 @@ onMounted(async () => {
 }
 
 .draft-card {
-  padding: 20px;
+  position: relative;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  cursor: pointer;
   transition: all var(--duration-normal);
+  overflow: hidden;
 }
 
 .draft-card:hover {
   border-color: var(--primary);
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
+}
+
+.draft-card-content {
+  padding: 20px;
+  cursor: pointer;
+}
+
+.draft-delete-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 10;
+  color: var(--text-main);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 0;
+  margin: 0;
+  outline: none;
+  opacity: 0;
+}
+
+.draft-card:hover .draft-delete-btn {
+  opacity: 1;
+}
+
+.draft-delete-btn:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.draft-delete-btn:hover {
+  background: #ff4444;
+  color: white;
+  border-color: #ff4444;
+  transform: scale(1.1);
+}
+
+.draft-delete-btn:active {
+  transform: scale(0.95);
 }
 
 .draft-name {
@@ -164,6 +291,42 @@ onMounted(async () => {
   gap: 12px;
   font-size: 12px;
   color: var(--text-sub);
+}
+
+/* 删除确认弹窗样式 */
+.delete-confirm-content {
+  text-align: center;
+  padding: var(--spacing-md) 0;
+}
+
+.delete-confirm-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--spacing-lg);
+  color: #ff4444;
+}
+
+.delete-confirm-message {
+  font-size: var(--font-base);
+  color: var(--text-main);
+  margin-bottom: var(--spacing-sm);
+}
+
+.delete-confirm-message strong {
+  color: var(--primary);
+  font-weight: var(--font-semibold);
+}
+
+.delete-confirm-warning {
+  font-size: var(--font-sm);
+  color: var(--text-sub);
+  margin: 0;
+}
+
+.delete-confirm-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: flex-end;
 }
 </style>
 
