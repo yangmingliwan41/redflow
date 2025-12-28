@@ -21,7 +21,8 @@ export class MultiContentPlanner {
   private availableStyles = [
     'xiaohongshu', 'poster_2k', 'ins_minimal', 'tech_future',
     'nature_fresh', 'morandi', 'black_gold', 'minimal_white',
-    'dopamine', 'cyberpunk', 'retro_vintage'
+    'dopamine', 'cyberpunk', 'retro_vintage', 'earth_tones',
+    'meng_hui_dunhuang'
   ]
 
   /**

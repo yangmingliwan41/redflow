@@ -130,6 +130,39 @@ export const useWorkspaceStore = defineStore('workspace', {
         if (userId) {
           this.workspaces = this.workspaces.filter(w => w.userId === userId)
         }
+
+        // 清理已删除历史记录对应的工作区
+        try {
+          const { getUserHistory } = await import('../services/storage/history')
+          const history = getUserHistory(userId || 'default')
+          const historyIds = new Set(history.map(h => h.id))
+          
+          // 过滤掉那些 relatedId 对应的历史记录已不存在的工作区
+          const beforeCount = this.workspaces.length
+          this.workspaces = this.workspaces.filter(w => {
+            // 如果有 relatedId，检查对应的历史记录是否存在
+            if (w.relatedId) {
+              return historyIds.has(w.relatedId)
+            }
+            // 没有 relatedId 的工作区（如草稿）保留
+            return true
+          })
+          
+          const removedCount = beforeCount - this.workspaces.length
+          if (removedCount > 0) {
+            logger.debug(`清理了 ${removedCount} 个已删除历史记录对应的工作区`)
+            // 保存清理后的工作区
+            await this.saveWorkspaces()
+            // 清理最近访问记录中的无效ID
+            this.recentWorkspaceIds = this.recentWorkspaceIds.filter(id => 
+              this.workspaces.some(w => w.id === id)
+            )
+            localStorage.setItem(RECENT_KEY, JSON.stringify(this.recentWorkspaceIds))
+          }
+        } catch (error) {
+          logger.warn('清理已删除历史记录对应的工作区失败:', error)
+          // 不抛出错误，因为工作区加载已经成功
+        }
       } catch (error: any) {
         this.error = error.message || '加载工作区失败'
         logger.error('加载工作区失败:', error)

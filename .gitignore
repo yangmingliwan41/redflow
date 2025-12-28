@@ -47,5 +47,17 @@ Thumbs.db
 *.temp
 .cache/
 
+# Temporary documentation (analysis, troubleshooting, etc.)
+# 临时分析文档
+docs/*_ANALYSIS.md
+docs/*_OPTIMIZATION.md
+# Docker 问题排查文档
+docs/DOCKER_*.md
+# 临时问题排查文档
+docs/*_ISSUE.md
+# 临时操作指南（保留必要的测试指南）
+docs/ADD_*.md
+docs/MANUAL_*.md
+
 
 

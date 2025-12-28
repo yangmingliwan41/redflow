@@ -267,6 +267,24 @@ const confirmDelete = async () => {
     
     if (success) {
       console.log('✅ 历史记录已删除:', item.id)
+      
+      // 同步删除对应的工作区（如果存在）
+      try {
+        const { useWorkspaceStore } = await import('../stores/workspaceStore')
+        const workspaceStore = useWorkspaceStore()
+        
+        // 查找通过 relatedId 关联到该历史记录的工作区
+        const relatedWorkspace = workspaceStore.allWorkspaces.find(w => w.relatedId === item.id)
+        
+        if (relatedWorkspace) {
+          await workspaceStore.deleteWorkspace(relatedWorkspace.id)
+          console.log('✅ 已同步删除对应的工作区:', relatedWorkspace.id)
+        }
+      } catch (workspaceError) {
+        console.warn('⚠️ 删除工作区失败（不影响历史记录删除）:', workspaceError)
+        // 不抛出错误，因为历史记录删除已经成功
+      }
+      
       // 关闭 Modal
       deleteModalVisible.value = false
       itemToDelete.value = null

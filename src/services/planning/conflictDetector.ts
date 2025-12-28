@@ -229,13 +229,15 @@ export class ConflictDetector {
    */
   private suggestAlternativeStyle(currentStyle: string): string {
     const alternatives: Record<string, string[]> = {
-      xiaohongshu: ['ins_minimal', 'nature_fresh', 'poster_2k'],
-      ins_minimal: ['xiaohongshu', 'minimal_white', 'tech_future'],
+      xiaohongshu: ['ins_minimal', 'nature_fresh', 'poster_2k', 'earth_tones'],
+      ins_minimal: ['xiaohongshu', 'minimal_white', 'tech_future', 'earth_tones'],
       poster_2k: ['xiaohongshu', 'tech_future', 'black_gold'],
       tech_future: ['ins_minimal', 'poster_2k', 'cyberpunk'],
-      nature_fresh: ['xiaohongshu', 'morandi', 'minimal_white'],
-      morandi: ['nature_fresh', 'minimal_white', 'xiaohongshu'],
-      black_gold: ['poster_2k', 'tech_future', 'cyberpunk']
+      nature_fresh: ['xiaohongshu', 'morandi', 'minimal_white', 'earth_tones'],
+      morandi: ['nature_fresh', 'minimal_white', 'xiaohongshu', 'earth_tones'],
+      black_gold: ['poster_2k', 'tech_future', 'cyberpunk'],
+      earth_tones: ['morandi', 'nature_fresh', 'minimal_white', 'xiaohongshu'],
+      meng_hui_dunhuang: ['earth_tones', 'morandi', 'xiaohongshu']
     }
     
     const suggestions = alternatives[currentStyle] || ['xiaohongshu', 'ins_minimal']

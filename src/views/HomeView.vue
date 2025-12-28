@@ -123,20 +123,13 @@
           <div class="option-item">
             <label>风格选择</label>
             <select v-model="textStyle" @change="persistTextOptions" class="text-option-select">
-              <option value="xiaohongshu">小红书爆款风格（默认）</option>
-              <option value="poster_2k">海报风格（2K）</option>
-              <option value="ins_minimal">INS 极简</option>
-              <option value="tech_future">科技未来</option>
-              <option value="nature_fresh">自然清新</option>
-              <option value="dopamine">多巴胺风格</option>
-              <option value="morandi">莫兰迪风格</option>
-              <option value="black_gold">黑金风格</option>
-              <option value="minimal_white">极简白</option>
-              <option value="cyberpunk">赛博朋克</option>
-              <option value="retro_vintage">复古怀旧</option>
-              <option value="klein_blue">克莱因蓝/瑞士主义</option>
-              <option value="dieter_rams">德国博朗风</option>
-              <option value="hermes_orange">爱马仕橙 & 深空灰</option>
+              <option 
+                v-for="style in availableStyles" 
+                :key="style.id" 
+                :value="style.id"
+              >
+                {{ style.name }}{{ style.id === 'xiaohongshu' ? '（默认）' : '' }}
+              </option>
             </select>
           </div>
           <div class="option-item">
@@ -410,7 +403,10 @@ const imageCountOptions = [1, 6, 7, 8, 9, 10, 11, 12]
 // 头图模式：自动根据图片数量判断，选择1张图片时自动启用
 const isHeadImageMode = computed(() => imageCount.value === 1)
 
-// 风格示例数据（使用配置中的中文描述，避免被长提示词“覆盖”或看起来像回滚）
+// 获取所有可用风格（用于下拉选择器）
+const availableStyles = computed(() => getAllStyleConfigs())
+
+// 风格示例数据（使用配置中的中文描述，避免被长提示词"覆盖"或看起来像回滚）
 const styleExamples = computed(() => {
   return getAllStyleConfigs().map(style => ({
     id: style.id,
