@@ -32,7 +32,7 @@
     "test:coverage": "vitest --coverage"
   },
   "dependencies": {
-    "@hongliu/image-generator": "file:../hongliu-image-generator/hongliu-image-generator",
+    "@hongliu/image-generator": "file:./hongliu-image-generator/hongliu-image-generator",
     "axios": "^1.6.0",
     "compression": "^1.7.4",
     "express": "^4.18.2",

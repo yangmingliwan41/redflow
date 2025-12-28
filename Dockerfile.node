@@ -11,7 +11,7 @@ WORKDIR /app
 COPY hongliu-image-generator/hongliu-image-generator /hongliu-image-generator/hongliu-image-generator
 
 # 复制依赖文件
-COPY redflow/package*.json ./
+COPY package*.json ./
 
 # 安装依赖（修复esbuild ETXTBSY错误）
 # 清理npm缓存，使用npm install代替npm ci，添加重试机制
@@ -21,7 +21,7 @@ RUN npm cache clean --force && \
     (sleep 5 && npm install --legacy-peer-deps --prefer-offline --no-audit)
 
 # 复制源代码
-COPY redflow/ ./
+COPY . .
 
 # 构建应用
 RUN npm run build
@@ -39,7 +39,7 @@ WORKDIR /app
 COPY hongliu-image-generator/hongliu-image-generator /hongliu-image-generator/hongliu-image-generator
 
 # 复制依赖文件
-COPY redflow/package*.json ./
+COPY package*.json ./
 
 # 只安装生产依赖
 RUN npm cache clean --force && \
@@ -50,7 +50,7 @@ RUN npm cache clean --force && \
 COPY --from=builder /app/dist ./dist
 
 # 复制服务器文件
-COPY redflow/server.js ./
+COPY server.js ./
 
 # 暴露端口
 EXPOSE 3000
