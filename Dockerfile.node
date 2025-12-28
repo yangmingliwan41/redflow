@@ -1,7 +1,7 @@
 # 多阶段构建 - Node.js服务器部署
-# 红流云创 v2.2
+# 红流云创 v2.3.9.2
 
-ARG VERSION=2.2.0
+ARG VERSION=2.3.9.2
 
 FROM node:20-alpine AS builder
 
@@ -26,7 +26,7 @@ RUN npm run build
 # 生产阶段 - Node.js
 FROM node:20-alpine
 
-ARG VERSION=2.2.0
+ARG VERSION=2.3.9.2
 LABEL version="${VERSION}"
 LABEL maintainer="红流云创团队"
 

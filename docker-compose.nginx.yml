@@ -1,4 +1,4 @@
-# 红流云创 v2.2 - Nginx部署配置
+# 红流云创 v2.3.9.2 - Nginx部署配置
 # 注意：更新代码后必须使用 --no-cache 参数重新构建，否则会使用缓存的旧代码
 
 services:
@@ -7,16 +7,16 @@ services:
       context: .
       dockerfile: Dockerfile.nginx
       args:
-        - VERSION=2.2.0
+        - VERSION=2.3.9.2
       # 不推荐在compose文件中设置no-cache，应该在构建时通过命令行参数指定
       # 使用命令: docker-compose -f docker-compose.nginx.yml build --no-cache
-    image: redflow-nginx:2.2
+    image: redflow-nginx:2.3.9.2
     container_name: redflow-nginx
     ports:
       - "8080:80"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
       timeout: 10s
       retries: 3
