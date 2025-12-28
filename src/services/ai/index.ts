@@ -11,6 +11,7 @@ export * from './outline'
 export * from './mock'
 export * from './promptTemplate'
 export * from './promptBatch'
+export * from './requirementAnalysis'
 
 // 重新导出主要函数，保持向后兼容
 export { analyzeProductImage } from './imageAnalysis'

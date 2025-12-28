@@ -2,11 +2,11 @@
   <div class="config-panel">
     <div class="config-header">
       <h2>配置参数</h2>
-      <p>Customizing AI generation</p>
     </div>
 
-    <!-- AI Auto Config Button -->
+    <!-- AI Auto Config Button - 暂时隐藏 -->
     <button
+      v-if="false"
       @click="onAutoConfigure"
       :disabled="disabled"
       class="ai-config-btn"
@@ -19,164 +19,130 @@
     </button>
 
     <div class="config-content">
-      <!-- API Provider Selection -->
-      <div class="api-provider-section">
-        <label>API 提供商配置</label>
-        
-        <div class="api-provider-group">
-          <div>
-            <label class="api-label">文本生成 (Text API)</label>
-            <select
-              :value="settings.textApiProvider || 'deepseek'"
-              @change="handleChange('textApiProvider', ($event.target as HTMLSelectElement).value)"
-              :disabled="disabled"
-              class="api-select"
-            >
-              <option value="deepseek">DeepSeek (推荐)</option>
-              <option value="google">Google</option>
-            </select>
-          </div>
-          
-          <div>
-            <label class="api-label">图像生成 (Image API)</label>
-            <select
-              :value="settings.imageApiProvider || 'google'"
-              @change="handleChange('imageApiProvider', ($event.target as HTMLSelectElement).value)"
-              :disabled="disabled"
-              class="api-select"
-            >
-              <option value="google">Google GenAI (推荐)</option>
-            </select>
-          </div>
-          
-          <div>
-            <label class="api-label">图像识别 (Analysis API)</label>
-            <select
-              :value="settings.imageAnalysisProvider || 'google'"
-              @change="handleChange('imageAnalysisProvider', ($event.target as HTMLSelectElement).value)"
-              :disabled="disabled"
-              class="api-select"
-            >
-              <option value="google">Google GenAI (推荐)</option>
-            </select>
-          </div>
-        </div>
-        
-        <p class="api-hint">
-          * 点击右上角"API配置"按钮管理您的API密钥
-        </p>
-      </div>
-      
-      <!-- Additional Context Input -->
-      <div class="form-group">
-        <label>补充说明 (可选)</label>
-        <textarea 
-          :value="settings.additionalContext || ''"
-          @input="handleChange('additionalContext', ($event.target as HTMLTextAreaElement).value)"
-          :disabled="disabled"
-          placeholder="例如：强调双十一优惠，适合送礼，或者指定背景元素..."
-          class="context-textarea"
-        />
-      </div>
-
-      <!-- Tone Selector -->
-      <div class="form-group">
-        <label>文案语气 (Tone)</label>
-        <div class="tone-grid">
-          <button
-            v-for="opt in TONE_OPTIONS"
-            :key="opt.value"
-            @click="handleChange('tone', opt.value)"
+      <!-- 单栏布局（移除API配置后） -->
+      <div class="config-content-single">
+        <!-- 补充说明 -->
+        <div class="form-group">
+          <label>补充说明</label>
+          <textarea 
+            :value="settings.additionalContext || ''"
+            @input="handleChange('additionalContext', ($event.target as HTMLTextAreaElement).value)"
             :disabled="disabled"
-            :class="['tone-btn', { active: settings.tone === opt.value }]"
-          >
-            {{ opt.label }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Copy Style Selector -->
-      <div class="form-group">
-        <label>文案风格 (Copy Style)</label>
-        <div class="copy-style-list">
-          <button
-            v-for="opt in COPY_STYLE_OPTIONS"
-            :key="opt.value"
-            @click="handleChange('copyStyle', opt.value)"
-            :disabled="disabled"
-            :class="['copy-style-btn', { active: settings.copyStyle === opt.value }]"
-          >
-            <span>{{ opt.label }}</span>
-            <span v-if="settings.copyStyle === opt.value" class="check-mark">✓</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Length Selector -->
-      <div class="form-group">
-        <label>篇幅长度 (Length)</label>
-        <select
-          :value="settings.length"
-          @change="handleChange('length', ($event.target as HTMLSelectElement).value)"
-          :disabled="disabled"
-          class="length-select"
-        >
-          <option v-for="opt in LENGTH_OPTIONS" :key="opt.value" :value="opt.value">
-            {{ opt.label }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Image Style Selector -->
-      <div class="image-style-section">
-        <label>图片生成配置</label>
-        
-        <select
-          :value="settings.imageStyle"
-          @change="handleChange('imageStyle', ($event.target as HTMLSelectElement).value)"
-          :disabled="disabled"
-          class="image-style-select"
-        >
-          <option v-for="opt in IMAGE_STYLE_OPTIONS" :key="opt.value" :value="opt.value">
-            {{ opt.label }}
-          </option>
-        </select>
-        
-        <div v-if="settings.imageStyle !== 'none'" class="brightness-control">
-          <div class="brightness-header">
-            <label>画面亮度 (Brightness)</label>
-            <span :class="['brightness-value', {
-              'bright': settings.brightness > 0,
-              'dark': settings.brightness < 0,
-              'normal': settings.brightness === 0
-            }]">
-              {{ settings.brightness > 0 ? '+' : '' }}{{ settings.brightness }}
-              {{ settings.brightness === 0 ? ' (自然)' : settings.brightness > 0 ? ' (明亮)' : ' (暗调)' }}
-            </span>
-          </div>
-          <input 
-            type="range" 
-            min="-5" 
-            max="5" 
-            step="1"
-            :value="settings.brightness"
-            @input="handleChange('brightness', parseInt(($event.target as HTMLInputElement).value))"
-            :disabled="disabled"
-            class="brightness-slider"
+            placeholder="例如：强调双十一优惠，适合送礼，或者指定背景元素..."
+            class="context-textarea"
           />
-          <div class="brightness-labels">
-            <span>暗调 (-5)</span>
-            <span>自然 (0)</span>
-            <span>明亮 (+5)</span>
+        </div>
+
+        <!-- 文案语气 -->
+        <div class="form-group">
+          <label>文案语气</label>
+          <div class="tone-list">
+            <button
+              v-for="opt in TONE_OPTIONS"
+              :key="opt.value"
+              @click="handleChange('tone', opt.value)"
+              :disabled="disabled"
+              :class="['tone-btn', { active: settings.tone === opt.value }]"
+            >
+              {{ opt.label }}
+            </button>
           </div>
         </div>
 
-        <p class="image-style-hint">
-          * AI 会根据选定风格和亮度自动重绘产品场景，尽量保持产品主体特征。
-        </p>
+        <!-- 文案风格 -->
+        <div class="form-group">
+          <label>文案风格</label>
+          <div class="copy-style-list">
+            <button
+              v-for="opt in COPY_STYLE_OPTIONS"
+              :key="opt.value"
+              @click="handleChange('copyStyle', opt.value)"
+              :disabled="disabled"
+              :class="['copy-style-btn', { active: settings.copyStyle === opt.value }]"
+            >
+              <span class="copy-style-label">{{ opt.label }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 篇幅长度 -->
+        <div class="form-group">
+          <label>篇幅长度</label>
+          <select
+            :value="settings.length"
+            @change="handleChange('length', ($event.target as HTMLSelectElement).value)"
+            :disabled="disabled"
+            class="length-select"
+          >
+            <option v-for="opt in LENGTH_OPTIONS" :key="opt.value" :value="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- 图片生成配置 -->
+        <div 
+          :class="['image-style-section', {
+            'brightness-bright': settings.imageStyle !== 'none' && settings.brightness > 0,
+            'brightness-dark': settings.imageStyle !== 'none' && settings.brightness < 0,
+            'brightness-normal': settings.imageStyle === 'none' || settings.brightness === 0
+          }]"
+          :style="settings.imageStyle !== 'none' && settings.brightness !== 0 ? {
+            '--brightness-intensity': Math.abs(settings.brightness) / 5,
+            '--brightness-level': settings.brightness
+          } : {}"
+        >
+          <label>图片生成配置</label>
+          
+          <select
+            :value="settings.imageStyle"
+            @change="handleChange('imageStyle', ($event.target as HTMLSelectElement).value)"
+            :disabled="disabled"
+            class="image-style-select"
+          >
+            <option v-for="opt in IMAGE_STYLE_OPTIONS" :key="opt.value" :value="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+          
+          <div v-if="settings.imageStyle !== 'none'" class="brightness-control">
+            <div class="brightness-header">
+              <label>画面亮度</label>
+              <span :class="['brightness-value', {
+                'bright': settings.brightness > 0,
+                'dark': settings.brightness < 0,
+                'normal': settings.brightness === 0
+              }]">
+                {{ settings.brightness > 0 ? '+' : '' }}{{ settings.brightness }}
+                {{ settings.brightness === 0 ? ' (自然)' : settings.brightness > 0 ? ' (明亮)' : ' (暗调)' }}
+              </span>
+            </div>
+            <input 
+              type="range" 
+              min="-5" 
+              max="5" 
+              step="1"
+              :value="settings.brightness"
+              @input="handleChange('brightness', parseInt(($event.target as HTMLInputElement).value))"
+              @mousedown.stop
+              @touchstart.stop
+              :disabled="disabled"
+              class="brightness-slider"
+            />
+            <div class="brightness-labels">
+              <span>暗调 (-5)</span>
+              <span>自然 (0)</span>
+              <span>明亮 (+5)</span>
+            </div>
+          </div>
+
+          <p class="image-style-hint">
+            * AI 会根据选定风格和亮度自动重绘产品场景，尽量保持产品主体特征。
+          </p>
+        </div>
       </div>
 
-      <!-- Debug/Prompt Tuning Section -->
+      <!-- Debug/Prompt Tuning Section - 全宽 -->
       <div class="debug-section">
         <button 
           @click="isDebugOpen = !isDebugOpen"
@@ -193,7 +159,7 @@
           >
             <path d="M9 18l6-6-6-6"></path>
           </svg>
-          🔧 提示词微调 (Debug Mode)
+          🔧 提示词微调
         </button>
         
         <div v-if="isDebugOpen" class="debug-content">
@@ -211,7 +177,7 @@
           
           <template v-if="settings.customPrompts?.enable">
             <div class="debug-textarea-group">
-              <label>文案生成 Prompt 模板</label>
+              <label>文案生成模板</label>
               <textarea 
                 :value="settings.customPrompts.marketingCopyTemplate"
                 @input="handleCustomPromptChange('marketingCopyTemplate', ($event.target as HTMLTextAreaElement).value)"
@@ -223,7 +189,7 @@
             </div>
             
             <div class="debug-textarea-group">
-              <label>图片生成 Prompt 模板</label>
+              <label>图片生成模板</label>
               <textarea 
                 :value="settings.customPrompts.imageGenerationTemplate"
                 @input="handleCustomPromptChange('imageGenerationTemplate', ($event.target as HTMLTextAreaElement).value)"
@@ -244,7 +210,7 @@
         :disabled="disabled"
         :class="['submit-btn', { disabled }]"
       >
-        {{ disabled ? '处理中...' : (mode === 'BATCH' ? '批量生成神仙推文' : '生成神仙推文') }}
+        {{ disabled ? '处理中...' : (mode === 'BATCH' ? '批量生成对应图文' : '生成对应图文') }}
       </button>
     </div>
   </div>
@@ -303,10 +269,11 @@ const onAutoConfigure = () => {
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
   height: 100%;
+  min-height: 500px;
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 200px);
   overflow-y: auto;
+  position: relative;
 }
 
 .config-header {
@@ -322,10 +289,6 @@ const onAutoConfigure = () => {
   margin-bottom: 4px;
 }
 
-.config-header p {
-  font-size: 14px;
-  color: var(--text-sub);
-}
 
 .ai-config-btn {
   width: 100%;
@@ -363,7 +326,13 @@ const onAutoConfigure = () => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--spacing-lg);
+}
+
+.config-content-single {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
 }
 
 .api-provider-section {
@@ -425,7 +394,7 @@ const onAutoConfigure = () => {
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--spacing-sm);
 }
 
 .form-group label {
@@ -436,12 +405,12 @@ const onAutoConfigure = () => {
 
 .context-textarea {
   width: 100%;
-  padding: 12px 16px;
+  padding: var(--spacing-sm) var(--spacing-md);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  font-size: 14px;
+  font-size: var(--font-sm);
   resize: none;
-  height: 96px;
+  height: 80px;
   font-family: inherit;
   outline: none;
   transition: all 0.2s;
@@ -457,10 +426,10 @@ const onAutoConfigure = () => {
   cursor: not-allowed;
 }
 
-.tone-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+.tone-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
 }
 
 .tone-btn {
@@ -493,22 +462,29 @@ const onAutoConfigure = () => {
 .copy-style-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--spacing-xs);
 }
 
 .copy-style-btn {
-  padding: 12px 16px;
+  padding: 8px 12px;
   font-size: 14px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
   background: white;
   color: var(--text-sub);
-  text-align: left;
+  text-align: center;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 8px;
   cursor: pointer;
   transition: all 0.2s;
+  position: relative;
+}
+
+.copy-style-label {
+  flex: 1;
+  text-align: center;
 }
 
 .copy-style-btn:hover:not(:disabled) {
@@ -516,9 +492,9 @@ const onAutoConfigure = () => {
 }
 
 .copy-style-btn.active {
-  background: #f0fdf4;
-  border-color: #22c55e;
-  color: #15803d;
+  background: #eff6ff;
+  border-color: var(--primary);
+  color: var(--primary);
   font-weight: 600;
 }
 
@@ -527,9 +503,6 @@ const onAutoConfigure = () => {
   cursor: not-allowed;
 }
 
-.check-mark {
-  color: #22c55e;
-}
 
 .length-select {
   width: 100%;
@@ -540,6 +513,7 @@ const onAutoConfigure = () => {
   background: white;
   outline: none;
   transition: all 0.2s;
+  text-align: center;
 }
 
 .length-select:focus {
@@ -557,6 +531,28 @@ const onAutoConfigure = () => {
   padding: 12px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
+  position: relative;
+  z-index: 1;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.image-style-section.brightness-bright {
+  background: linear-gradient(
+    135deg,
+    rgba(220, 230, 245, calc(0.6 + var(--brightness-intensity, 0) * 0.4)),
+    rgba(235, 240, 250, calc(0.7 + var(--brightness-intensity, 0) * 0.3))
+  );
+  border-color: rgba(180, 200, 220, calc(0.35 + var(--brightness-intensity, 0) * 0.45));
+}
+
+.image-style-section.brightness-dark {
+  background: rgba(0, 0, 0, calc(var(--brightness-intensity, 0) * 0.12));
+  border-color: rgba(0, 0, 0, calc(0.1 + var(--brightness-intensity, 0) * 0.15));
+}
+
+.image-style-section.brightness-normal {
+  background: var(--bg-body);
+  border-color: var(--border-color);
 }
 
 .image-style-section > label {
@@ -591,6 +587,9 @@ const onAutoConfigure = () => {
 
 .brightness-control {
   margin-top: 8px;
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
 }
 
 .brightness-header {
@@ -635,6 +634,22 @@ const onAutoConfigure = () => {
   outline: none;
   -webkit-appearance: none;
   appearance: none;
+  cursor: pointer;
+  pointer-events: auto;
+  margin: 8px 0;
+  position: relative;
+  z-index: 10;
+  touch-action: pan-x;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.brightness-slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-body);
+  border-radius: 4px;
+  cursor: pointer;
+  -webkit-appearance: none;
 }
 
 .brightness-slider::-webkit-slider-thumb {
@@ -644,7 +659,31 @@ const onAutoConfigure = () => {
   height: 20px;
   background: var(--primary);
   border-radius: 50%;
+  cursor: grab;
+  margin-top: -6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s;
+  position: relative;
+  z-index: 11;
+}
+
+.brightness-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.2);
+}
+
+.brightness-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(74, 142, 255, 0.4);
+}
+
+.brightness-slider::-moz-range-track {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-body);
+  border-radius: 4px;
   cursor: pointer;
+  border: none;
 }
 
 .brightness-slider::-moz-range-thumb {
@@ -652,8 +691,35 @@ const onAutoConfigure = () => {
   height: 20px;
   background: var(--primary);
   border-radius: 50%;
-  cursor: pointer;
+  cursor: grab;
   border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s;
+  position: relative;
+  z-index: 11;
+}
+
+.brightness-slider::-moz-range-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.2);
+}
+
+.brightness-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(74, 142, 255, 0.4);
+}
+
+.brightness-slider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.brightness-slider:disabled::-webkit-slider-thumb {
+  cursor: not-allowed;
+}
+
+.brightness-slider:disabled::-moz-range-thumb {
+  cursor: not-allowed;
 }
 
 .brightness-labels {
@@ -829,24 +895,48 @@ const onAutoConfigure = () => {
 
 .submit-btn {
   width: 100%;
-  padding: 12px 24px;
-  border-radius: var(--radius-md);
-  color: white;
-  font-weight: 700;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s;
-  cursor: pointer;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--primary-gradient);
+  color: var(--text-inverse);
   border: none;
-  background: linear-gradient(to right, #2563eb, #22c55e);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  transition: all var(--duration-normal) var(--ease-spring);
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--duration-slow) var(--ease-out);
 }
 
 .submit-btn:hover:not(.disabled) {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  transform: translateY(-1px);
+  background: var(--primary-gradient-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.submit-btn:hover:not(.disabled)::before {
+  left: 100%;
 }
 
 .submit-btn:active:not(.disabled) {
-  transform: scale(0.98);
+  transform: translateY(0);
+  box-shadow: var(--shadow-md);
 }
 
 .submit-btn.disabled {

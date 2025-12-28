@@ -2,6 +2,17 @@
  * 图片处理工具函数
  */
 
+// 从 @hongliu/image-generator 模块导入工具函数（直接从子模块导入，避免加载 React Hook）
+import {
+  fileToBase64 as moduleFileToBase64,
+  validateImage as moduleValidateImage,
+  validateImageSize as moduleValidateImageSize,
+  validateImageType as moduleValidateImageType,
+  getMimeType as moduleGetMimeType,
+  downloadImage as moduleDownloadImage,
+  extractBase64FromMarkdown as moduleExtractBase64FromMarkdown
+} from '@hongliu/image-generator/src/core/utils/imageUtils'
+
 /**
  * 压缩图片
  */
@@ -50,7 +61,7 @@ export function compressImage(
 }
 
 /**
- * 将 File 转换为 base64
+ * 将 File 转换为 base64（返回完整 data URL，保持向后兼容）
  */
 export function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -59,6 +70,61 @@ export function fileToBase64(file: File): Promise<string> {
     reader.onerror = reject
     reader.readAsDataURL(file)
   })
+}
+
+/**
+ * 将 File 转换为纯 base64 字符串（不包含 data: 前缀）
+ * 使用模块提供的函数
+ */
+export async function fileToBase64String(file: File): Promise<string> {
+  return await moduleFileToBase64(file)
+}
+
+/**
+ * 验证图片文件（使用模块提供的函数）
+ * @param file 要验证的文件
+ * @param maxSizeMB 最大文件大小（MB），默认20MB
+ */
+export function validateImage(
+  file: File,
+  maxSizeMB: number = 20
+): { valid: boolean; error?: string } {
+  return moduleValidateImage(file, maxSizeMB)
+}
+
+/**
+ * 验证图片文件大小
+ */
+export function validateImageSize(file: File, maxSizeMB: number = 20): boolean {
+  return moduleValidateImageSize(file, maxSizeMB)
+}
+
+/**
+ * 验证图片文件类型
+ */
+export function validateImageType(file: File): boolean {
+  return moduleValidateImageType(file)
+}
+
+/**
+ * 获取文件的 MIME 类型
+ */
+export function getMimeType(file: File): 'image/png' | 'image/jpeg' | 'image/webp' {
+  return moduleGetMimeType(file)
+}
+
+/**
+ * 下载图片到本地
+ */
+export function downloadImage(dataUrl: string, filename: string): void {
+  return moduleDownloadImage(dataUrl, filename)
+}
+
+/**
+ * 从 Markdown 格式的文本中提取 Base64 图片数据
+ */
+export function extractBase64FromMarkdown(markdown: string): string | null {
+  return moduleExtractBase64FromMarkdown(markdown)
 }
 
 /**

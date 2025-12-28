@@ -1,52 +1,116 @@
 <template>
   <PageContainer size="xl" class="home-container">
-    <PageHeader
-      title="创作中心"
-      subtitle="支持文本生成图文、图生图和提示词生成图片三种创作模式"
-    />
+    <div class="home-content">
+      <!-- 只在非创建页面显示标题 -->
+      <PageHeader
+        v-if="!isInCreateView"
+        title="创作中心"
+        subtitle="快速模式：简单高效 | 专业模式：精细控制"
+      />
 
-    <!-- 模式选择 -->
-    <div class="mode-selector">
+    <!-- 模式选择（只在非创建页面显示）- 简化为快速模式和专业模式 -->
+    <div v-if="!isInCreateView" class="mode-selector">
       <button
-        :class="['mode-btn', { active: mode === 'text' }]"
-        @click="mode = 'text'"
+        :class="['mode-btn', 'mode-btn-large', { active: workMode === 'quick' }]"
+        @click="workMode = 'quick'"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-          <polyline points="14 2 14 8 20 8"></polyline>
-          <line x1="16" y1="13" x2="8" y2="13"></line>
-          <line x1="16" y1="17" x2="8" y2="17"></line>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
         </svg>
-        文本生成图文
+        <div class="mode-btn-content">
+          <div class="mode-btn-title">快速模式</div>
+          <div class="mode-btn-desc">文生图 · 需求分析</div>
+        </div>
       </button>
       <button
-        :class="['mode-btn', { active: mode === 'image' }]"
-        @click="mode = 'image'"
+        :class="['mode-btn', 'mode-btn-large', { active: workMode === 'professional' }]"
+        @click="workMode = 'professional'"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
           <circle cx="8.5" cy="8.5" r="1.5"></circle>
           <polyline points="21 15 16 10 5 21"></polyline>
         </svg>
-        图生图
+        <div class="mode-btn-content">
+          <div class="mode-btn-title">专业模式</div>
+          <div class="mode-btn-desc">图生图 · 提示词生图</div>
+        </div>
       </button>
-      <button
-        :class="['mode-btn', { active: mode === 'prompt' }]"
-        @click="handlePromptMode"
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-          <path d="M2 17l10 5 10-5"></path>
-          <path d="M2 12l10 5 10-5"></path>
-        </svg>
-        提示词生成图片
-      </button>
+    </div>
+
+    <!-- 快速模式：文生图和需求分析 -->
+    <div v-if="!isInCreateView && workMode === 'quick'" class="quick-mode">
+      <div class="quick-mode-grid">
+        <div class="quick-mode-card" @click="handleQuickModeClick('text')">
+          <div class="quick-mode-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+          </div>
+          <h3>文本生成图文</h3>
+          <p>输入主题，AI生成完整图文</p>
+        </div>
+        <div class="quick-mode-card" @click="handleQuickModeClick('requirement')">
+          <div class="quick-mode-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11l3 3L22 4"></path>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            </svg>
+          </div>
+          <h3>需求分析</h3>
+          <p>输入需求，AI自动分析</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 专业模式：图生图、提示词生图和空间设计 -->
+    <div v-if="!isInCreateView && workMode === 'professional'" class="professional-mode">
+      <div class="professional-mode-grid">
+        <div class="professional-mode-card" @click="handleProfessionalModeClick('image')">
+          <div class="professional-mode-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </div>
+          <h3>图生图文</h3>
+          <p>上传图片，AI生成营销图文</p>
+        </div>
+        <div class="professional-mode-card" @click="handleProfessionalModeClick('prompt')">
+          <div class="professional-mode-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+              <path d="M2 17l10 5 10-5"></path>
+              <path d="M2 12l10 5 10-5"></path>
+            </svg>
+          </div>
+          <h3>提示词生图</h3>
+          <p>输入提示词，批量生成图片</p>
+        </div>
+        <div class="professional-mode-card" @click="handleProfessionalModeClick('space-design')">
+          <div class="professional-mode-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="9" y1="3" x2="9" y2="21"></line>
+              <line x1="3" y1="9" x2="21" y2="9"></line>
+              <circle cx="6" cy="6" r="1"></circle>
+              <circle cx="18" cy="18" r="1"></circle>
+            </svg>
+          </div>
+          <h3>空间设计</h3>
+          <p>上传图片，AI智能设计装修空间</p>
+        </div>
+      </div>
     </div>
 
 
 
-    <!-- 文本生成图文模式 -->
-    <div v-if="mode === 'text'" class="text-mode">
+    <!-- 文本生成图文模式（只在创建视图中显示） -->
+    <div v-if="mode === 'text' && isInCreateView" class="text-mode">
       <div class="input-section">
         <textarea
           v-model="topic"
@@ -87,14 +151,15 @@
             </span>
           </div>
         </div>
-        <Button
+        <AlgorithmicButton
           variant="primary"
           :loading="loading"
           :disabled="loading || !topic.trim()"
           @click="handleGenerateOutline"
+          :enable-effect="true"
         >
           生成大纲
-        </Button>
+        </AlgorithmicButton>
       </div>
 
       <!-- 文本大纲结果展示 -->
@@ -128,8 +193,8 @@
       </div>
     </div>
 
-    <!-- 图生图模式 -->
-    <div v-if="mode === 'image'" class="image-mode-layout">
+    <!-- 图生图模式（只在创建视图中显示） -->
+    <div v-if="mode === 'image' && isInCreateView" class="image-mode-layout">
       <div class="image-mode-left">
         <!-- 模式切换：单张 vs 批量 -->
         <div class="processing-mode-selector" style="margin-bottom: 20px;">
@@ -222,7 +287,7 @@
         <div v-if="results.length === 0" class="empty-workspace">
           <div class="empty-icon">👋</div>
           <h3>欢迎使用红流云创</h3>
-          <p>在左侧上传图片开始创作，或点击"AI 智能一键配置"自动规划方案。</p>
+          <p>在左侧上传图片开始创作。</p>
         </div>
 
         <div v-else class="results-container">
@@ -237,8 +302,8 @@
       </div>
     </div>
 
-    <!-- 风格示例展示区域 -->
-    <div class="style-examples-section">
+    <!-- 风格示例展示区域 - 只在文本生成模式中显示 -->
+    <div v-if="isInCreateView && mode === 'text'" class="style-examples-section">
       <h3>风格示例展示</h3>
       <p class="section-description">选择不同风格，查看对应的示例效果</p>
       <div class="style-examples-grid">
@@ -249,40 +314,9 @@
           :name="style.name"
           :imageUrl="style.imageUrl"
           :prompt="style.prompt"
+          :selected="mode === 'text' ? textStyle === style.id : (mode === 'image' ? settings.imageStyle === style.id : false)"
           @click="handleStyleExampleClick"
         />
-      </div>
-    </div>
-
-    <!-- 案例演示帖子区域 -->
-    <div class="case-demo-section">
-      <h3>案例演示帖子</h3>
-      <p class="section-description">浏览各类案例，学习不同风格的应用</p>
-      
-      <!-- 案例筛选组件 -->
-      <CaseFilter
-        :categories="caseCategories"
-        @filterChange="handleFilterChange"
-      />
-      
-      <!-- 案例卡片网格 -->
-      <div class="case-grid">
-        <CaseCard
-          v-for="caseItem in filteredCases"
-          :key="caseItem?.id || 'default-key'"
-          :caseItem="caseItem"
-          @click="handleCaseClick"
-          @viewDetail="handleViewCaseDetail"
-          @copyConfig="handleCopyCaseConfig"
-          @toggleFavorite="handleToggleFavorite"
-        />
-      </div>
-      
-      <!-- 空状态 -->
-      <div v-if="filteredCases.length === 0" class="empty-cases">
-        <div class="empty-icon">📚</div>
-        <h4>暂无案例</h4>
-        <p>请尝试调整筛选条件或添加新案例</p>
       </div>
     </div>
 
@@ -301,14 +335,23 @@
       @confirm="handleContinueEditConfirm"
       @cancel="handleContinueEditCancel"
     />
+
+    <!-- 新手引导模态框 -->
+    <GuideModal
+      :visible="showGuideModal"
+      @update:visible="showGuideModal = $event"
+      @start="handleGuideStart"
+      @close="handleGuideClose"
+    />
+    </div>
   </PageContainer>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { analyzeProductImage, generateMarketingCopy, generateStyledImage, generateOutline } from '../services/ai'
-import { saveHistoryItem, getCurrentUser, registerUser } from '../services/storage'
+import { saveHistoryItem, getCurrentUser, registerUser, getUserHistory } from '../services/storage'
 import { v4 as uuidv4 } from 'uuid'
 import { GeneratedResult, ProcessingStatus, ProcessingMode, GenerationSettings } from '../types'
 import ConfigPanel from '../components/ConfigPanel.vue'
@@ -318,17 +361,46 @@ import CaseCard from '../components/CaseCard.vue'
 import CaseFilter from '../components/CaseFilter.vue'
 import CaseDetailModal from '../components/CaseDetailModal.vue'
 import ContinueEditModal from '../components/ContinueEditModal.vue'
+import GuideModal from '../components/GuideModal.vue'
 import { useTextGeneratorStore } from '../stores/textGenerator'
 import { PageContainer, PageHeader } from '../components/layout'
-import { Button } from '../components/ui'
 import { getStylePrompt, getAllStyleConfigs } from '../config/stylePrompts'
 import { useCaseData } from '../composables/useCaseData'
 import { CaseItem } from '../types/case'
+import AlgorithmicButton from '../components/ui/AlgorithmicButton.vue'
+import { useToast } from '../composables/useToast'
 
 const router = useRouter()
+const route = useRoute()
 const textStore = useTextGeneratorStore()
 
-const mode = ref<'text' | 'image' | 'prompt'>('text')
+interface Props {
+  mode?: 'text' | 'image' | 'prompt'
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  mode: undefined
+})
+
+// 根据路由自动判断 mode，如果不在创建视图中则设为 undefined
+const getInitialMode = (): 'text' | 'image' | 'prompt' | undefined => {
+  if (props.mode) {
+    return props.mode
+  }
+  // 根据路由判断
+  if (route.path === '/create/text') return 'text'
+  if (route.path === '/create/image') return 'image'
+  if (route.path === '/create/prompt') return 'prompt'
+  return undefined
+}
+
+const mode = ref<'text' | 'image' | 'prompt' | undefined>(getInitialMode() as 'text' | 'image' | 'prompt' | undefined)
+const workMode = ref<'quick' | 'professional'>('quick')  // 工作模式：快速模式或专业模式
+
+// 判断是否在创建视图中（用于隐藏标题和模式选择器）
+const isInCreateView = computed(() => {
+  return route.path.startsWith('/create/')
+})
 const textStyle = ref(localStorage.getItem('TEXT_STYLE') || 'xiaohongshu')
 const imageCount = ref<number>(parseInt(localStorage.getItem('TEXT_IMAGE_COUNT') || '8', 10) || 8)
 const imageCountOptions = [1, 6, 7, 8, 9, 10, 11, 12]
@@ -356,18 +428,24 @@ const persistTextOptions = () => {
 
 // 处理风格示例点击
 const handleStyleExampleClick = (styleId: string) => {
+  const toast = useToast()
+  const styleName = styleExamples.value.find(s => s.id === styleId)?.name || styleId
+  
   // 根据当前模式设置对应的风格
   if (mode.value === 'text') {
     textStyle.value = styleId
     persistTextOptions()
+    toast.success(`已选择风格：${styleName}`, { title: '风格配置成功' })
   } else if (mode.value === 'image') {
     // 将样式ID强制转换为预设的 imageStyle 类型，保证类型安全
     settings.value.imageStyle = styleId as GenerationSettings['imageStyle']
-  }
-  
-  // 切换到对应的模式（如果不在正确的模式下）
-  if (mode.value !== 'text' && mode.value !== 'image') {
+    toast.success(`已选择风格：${styleName}`, { title: '风格配置成功' })
+  } else {
+    // 切换到对应的模式（如果不在正确的模式下）
     mode.value = 'text'
+    textStyle.value = styleId
+    persistTextOptions()
+    toast.success(`已选择风格：${styleName}`, { title: '风格配置成功' })
   }
 }
 
@@ -440,6 +518,128 @@ const handleToggleFavorite = (caseItem: CaseItem) => {
 const handlePromptMode = () => {
   router.push('/prompt-generate')
 }
+
+// 处理快速模式点击
+const handleQuickModeClick = (type: 'text' | 'requirement') => {
+  if (type === 'text') {
+    router.push('/create/text')
+  } else if (type === 'requirement') {
+    router.push('/plan/requirement')
+  }
+}
+
+// 处理专业模式点击
+const handleProfessionalModeClick = (type: 'image' | 'prompt' | 'space-design') => {
+  if (type === 'image') {
+    router.push('/create/image')
+  } else if (type === 'prompt') {
+    router.push('/create/prompt')
+  } else if (type === 'space-design') {
+    router.push('/create/space-design')
+  }
+}
+
+// 新手引导相关
+const GUIDE_SEEN_KEY = 'redflow_guide_seen'
+const showGuideModal = ref(false)
+
+// 检查是否需要显示引导
+const checkShouldShowGuide = () => {
+  // 检查是否在首页
+  if (route.path !== '/') {
+    return false
+  }
+  
+  // 检查用户是否有创作记录
+  const user = getCurrentUser()
+  if (user) {
+    const userHistory = getUserHistory(user.id)
+    // 如果有历史记录，说明用户已经使用过，不需要显示引导
+    if (userHistory && userHistory.length > 0) {
+      return false
+    }
+  }
+  
+  // 检查是否已经看过引导
+  const guideSeen = localStorage.getItem(GUIDE_SEEN_KEY)
+  if (guideSeen) {
+    return false
+  }
+  
+  // 检查是否清除了缓存（通过检查是否有其他数据来判断）
+  // 如果 localStorage 中只有 guide_seen，说明可能清除了缓存
+  const hasOtherData = localStorage.getItem('redflow_user') || 
+                       localStorage.getItem('redflow_history') ||
+                       localStorage.getItem('redflow_workspaces')
+  
+  // 如果没有其他数据，说明可能是新用户或清除了缓存
+  if (!hasOtherData) {
+    return true
+  }
+  
+  return false
+}
+
+// 处理引导开始
+const handleGuideStart = () => {
+  localStorage.setItem(GUIDE_SEEN_KEY, 'true')
+  showGuideModal.value = false
+}
+
+// 处理引导关闭
+const handleGuideClose = () => {
+  localStorage.setItem(GUIDE_SEEN_KEY, 'true')
+  showGuideModal.value = false
+}
+
+// 监听路由变化，在首页时检查是否需要显示引导
+watch(() => route.path, (newPath) => {
+  if (newPath === '/' && !isInCreateView.value) {
+    if (checkShouldShowGuide()) {
+      showGuideModal.value = true
+    }
+  }
+}, { immediate: true })
+
+// 监听清除缓存事件（通过自定义事件）
+const handleStorageClear = () => {
+  // 延迟一下，确保 localStorage 已清除
+  setTimeout(() => {
+    if (route.path === '/' && !isInCreateView.value) {
+      showGuideModal.value = true
+    }
+  }, 100)
+}
+
+const handleShowGuide = () => {
+  showGuideModal.value = true
+}
+
+onMounted(() => {
+  // 检查是否需要显示引导
+  if (checkShouldShowGuide()) {
+    showGuideModal.value = true
+  }
+  
+  // 监听 storage 事件（跨标签页）
+  window.addEventListener('storage', (e) => {
+    if (e.key === GUIDE_SEEN_KEY && !e.newValue) {
+      handleStorageClear()
+    }
+  })
+  
+  // 监听自定义清除缓存事件
+  window.addEventListener('redflow:clearCache', handleStorageClear)
+  
+  // 监听显示引导事件
+  window.addEventListener('redflow:showGuide', handleShowGuide)
+})
+
+onUnmounted(() => {
+  // 清理事件监听器
+  window.removeEventListener('redflow:clearCache', handleStorageClear)
+  window.removeEventListener('redflow:showGuide', handleShowGuide)
+})
 
 const processingMode = ref<'SINGLE' | 'BATCH'>('SINGLE')
 const topic = ref('')
@@ -1028,10 +1228,48 @@ const clearAll = () => {
 .home-container {
   max-width: 1400px;
   padding: 32px;
+  position: relative;
+  min-height: 100vh;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.home-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 200px);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 让 PageHeader 标题在左上角 */
+:deep(.ui-page-header) {
+  text-align: left;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+:deep(.ui-page-header__content) {
+  justify-content: flex-start;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+:deep(.ui-page-header__title-section) {
+  text-align: left;
+  width: auto;
 }
 
 .page-header {
   margin-bottom: 32px;
+  width: 100%;
 }
 
 .page-title {
@@ -1050,78 +1288,250 @@ const clearAll = () => {
   display: flex;
   gap: 16px;
   margin-bottom: 32px;
+  justify-content: center;
+  width: 100%;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .mode-btn {
   flex: 1;
-  padding: 16px 24px;
+  padding: var(--spacing-lg) var(--spacing-xl);
   border: 2px solid var(--border-color);
   border-radius: var(--radius-lg);
   background: var(--bg-card);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  font-size: 16px;
-  font-weight: 500;
+  gap: var(--spacing-sm);
+  font-size: var(--font-base);
+  font-weight: var(--font-medium);
+  font-family: var(--font-family-display);
+  color: var(--text-main);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--duration-normal) var(--ease-spring);
+  position: relative;
+  overflow: hidden;
+}
+
+.mode-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--primary-gradient);
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-out);
 }
 
 .mode-btn:hover {
   border-color: var(--primary);
-  background: var(--primary-fade);
+  background: var(--bg-body);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(74, 142, 255, 0.15);
+}
+
+.mode-btn:hover::before {
+  opacity: 0.05;
 }
 
 .mode-btn.active {
+  border-color: transparent;
+  background: var(--primary-gradient);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.mode-btn.active::before {
+  opacity: 0;
+}
+
+.mode-btn-large {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xl) var(--spacing-2xl);
+  min-height: 80px;
+  flex-direction: column;
+}
+
+.mode-btn-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  text-align: center;
+}
+
+.mode-btn-title {
+  font-size: var(--font-lg);
+  font-weight: var(--font-bold);
+}
+
+.mode-btn-desc {
+  font-size: var(--font-sm);
+  opacity: 0.8;
+}
+
+/* 快速模式和专业模式卡片 */
+.quick-mode,
+.professional-mode {
+  margin-top: var(--spacing-2xl);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.quick-mode-grid,
+.professional-mode-grid {
+  display: flex;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.quick-mode-card,
+.professional-mode-card {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-2xl);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-out);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  font-weight: 500;
+}
+
+.quick-mode-card {
+  width: 392px;
+}
+
+.professional-mode-card {
+  width: 392px;
+}
+
+.quick-mode-card::before,
+.professional-mode-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--primary-gradient);
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-out);
+}
+
+.quick-mode-card:hover,
+.professional-mode-card:hover {
   border-color: var(--primary);
-  background: var(--primary-light);
-  color: var(--primary);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.quick-mode-card:hover::before,
+.professional-mode-card:hover::before {
+  opacity: 0.05;
+}
+
+.quick-mode-icon,
+.professional-mode-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--spacing-lg);
+  background: var(--primary-gradient);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-inverse);
+  position: relative;
+  z-index: 1;
+}
+
+.quick-mode-card h3,
+.professional-mode-card h3 {
+  font-size: var(--font-xl);
+  font-weight: var(--font-bold);
+  color: var(--text-main);
+  margin-bottom: var(--spacing-sm);
+  position: relative;
+  z-index: 1;
+}
+
+.quick-mode-card p,
+.professional-mode-card p {
+  font-size: var(--font-base);
+  color: var(--text-sub);
+  position: relative;
+  z-index: 1;
 }
 
 /* 文本模式 */
 .text-mode {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--section-gap);
+  animation: fadeIn var(--duration-normal) var(--ease-out);
 }
 
 .input-section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-lg);
+  animation: slideUp var(--duration-normal) var(--ease-out);
+  animation-delay: 0.1s;
+  animation-fill-mode: both;
 }
 
 .text-options {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-md);
 }
 
 .option-item {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--spacing-sm);
 }
 
 .option-item label {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--font-sm);
+  font-weight: var(--font-semibold);
   color: var(--text-main);
+  font-family: var(--font-family-display);
 }
 
 .text-option-select {
-  padding: 10px 12px;
+  padding: var(--spacing-md) var(--spacing-lg);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  background: white;
-  font-size: 14px;
+  background: var(--bg-card);
+  font-size: var(--font-sm);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-out);
+  text-align: left;
+  text-align-last: left;
 }
 
 .text-option-select:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-fade);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-focus);
 }
 
 .topic-input {
@@ -1166,71 +1576,129 @@ const clearAll = () => {
 .outline-pages {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
 }
 
 .outline-page {
-  padding: 16px;
-  background: var(--bg-body);
-  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  transition: all var(--duration-normal) var(--ease-out);
+  animation: slideUp var(--duration-normal) var(--ease-out);
+  animation-fill-mode: both;
+  box-shadow: var(--shadow-sm);
+}
+
+.outline-page:nth-child(1) { animation-delay: 0.05s; }
+.outline-page:nth-child(2) { animation-delay: 0.1s; }
+.outline-page:nth-child(3) { animation-delay: 0.15s; }
+.outline-page:nth-child(4) { animation-delay: 0.2s; }
+
+.outline-page:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--primary);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(74, 142, 255, 0.12);
 }
 
 .outline-page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .outline-page-index {
-  font-weight: 600;
+  font-weight: var(--font-semibold);
+  font-family: var(--font-family-display);
   color: var(--text-main);
+  font-size: var(--font-base);
 }
 
 .outline-page-type {
-  font-size: 12px;
-  padding: 4px 8px;
-  background: var(--primary-fade);
+  font-size: var(--font-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--primary-light);
   color: var(--primary);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-semibold);
 }
 
 .outline-page-content {
   color: var(--text-sub);
-  line-height: 1.6;
+  line-height: var(--line-height-relaxed);
+  font-size: var(--font-sm);
+  margin-top: var(--spacing-sm);
 }
 
 .outline-raw {
-  margin-top: 16px;
-  padding: 16px;
-  background: var(--bg-body);
-  border-radius: var(--radius-md);
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.outline-raw:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
 }
 
 .outline-raw summary {
   cursor: pointer;
-  font-weight: 600;
+  font-weight: var(--font-semibold);
+  font-family: var(--font-family-display);
   color: var(--primary);
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.outline-raw summary:hover {
+  background: var(--primary-light);
+  transform: translateX(4px);
 }
 
 .outline-raw pre {
   white-space: pre-wrap;
   word-wrap: break-word;
   color: var(--text-sub);
-  font-size: 14px;
+  font-size: var(--font-sm);
+  font-family: var(--font-family-mono);
+  line-height: var(--line-height-relaxed);
+  padding: var(--spacing-md);
+  background: var(--bg-body);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
 }
 
 /* 图生图模式 */
 .image-mode-layout {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 24px;
+  grid-template-columns: 360px 1fr;
+  gap: var(--section-gap);
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+  align-items: start;
+}
+
+@media (max-width: 1400px) {
+  .image-mode-left-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 1024px) {
   .image-mode-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .empty-tips {
     grid-template-columns: 1fr;
   }
 }
@@ -1238,22 +1706,77 @@ const clearAll = () => {
 .image-mode-left {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--spacing-xl);
+  animation: slideUp var(--duration-normal) var(--ease-out);
+  animation-delay: 0.1s;
+  animation-fill-mode: both;
+}
+
+/* 左侧双栏布局 */
+.image-mode-left-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+  height: 100%;
+}
+
+.image-mode-left-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.image-mode-right-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 1400px) {
+  .image-mode-left-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .upload-area {
   border: 2px dashed var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 48px;
+  padding: var(--spacing-xl);
   text-align: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--duration-normal) var(--ease-spring);
   background: var(--bg-card);
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.upload-area::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--primary-gradient);
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-out);
 }
 
 .upload-area:hover:not(.disabled) {
   border-color: var(--primary);
-  background: var(--primary-fade);
+  border-style: solid;
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(74, 142, 255, 0.15);
+}
+
+.upload-area:hover:not(.disabled)::before {
+  opacity: 0.05;
 }
 
 .upload-area.disabled {
@@ -1296,93 +1819,167 @@ const clearAll = () => {
 }
 
 .image-mode-right {
-  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .empty-workspace {
-  height: 100%;
-  min-height: 500px;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  padding: 48px;
+  border-radius: var(--radius-xl);
+  border: 1px dashed var(--border-color);
+  padding: var(--spacing-3xl);
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+  min-height: 0;
 }
 
 .empty-icon {
-  font-size: 64px;
-  margin-bottom: 16px;
+  font-size: 80px;
+  margin-bottom: var(--spacing-lg);
+  opacity: 0.6;
+  filter: grayscale(0.3);
 }
 
 .empty-workspace h3 {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: var(--font-2xl);
+  font-weight: var(--font-bold);
+  font-family: var(--font-family-display);
   color: var(--text-main);
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-sm);
 }
 
 .empty-workspace p {
   color: var(--text-sub);
-  max-width: 400px;
+  max-width: 420px;
+  font-size: var(--font-base);
+  line-height: var(--line-height-relaxed);
 }
 
 .results-container {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--spacing-xl);
+  animation: fadeIn var(--duration-normal) var(--ease-out);
 }
 
 .card {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
-  padding: 24px;
+  padding: var(--spacing-xl);
   border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.card:hover {
+  background: var(--bg-card-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .card h3 {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: var(--font-xl);
+  font-weight: var(--font-bold);
+  font-family: var(--font-family-display);
   color: var(--text-main);
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-lg);
 }
 
 /* 处理模式选择器 */
 .processing-mode-selector {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 16px;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.processing-mode-selector:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.selector-label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
+  color: var(--text-main);
+  font-size: var(--font-sm);
+}
+
+.mode-toggle-group {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
+}
+
+.mode-hint {
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-xs);
+  color: var(--text-sub);
+  line-height: 1.4;
+}
+
+.upload-hint {
+  font-size: var(--font-sm);
+  color: var(--text-sub);
+  margin-top: var(--spacing-sm);
 }
 
 .mode-toggle-btn {
   flex: 1;
-  padding: 10px 16px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-body);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 2px solid var(--border-color);
+  background: var(--bg-card);
   color: var(--text-main);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  font-size: 14px;
-  transition: all 0.2s;
+  gap: var(--spacing-sm);
+  font-size: var(--font-sm);
+  font-weight: var(--font-medium);
+  transition: all var(--duration-normal) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.mode-toggle-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--primary-gradient);
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-out);
 }
 
 .mode-toggle-btn:hover:not(:disabled) {
-  background: var(--bg-hover);
+  background: var(--bg-body);
   border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 142, 255, 0.15);
+}
+
+.mode-toggle-btn:hover:not(:disabled)::before {
+  opacity: 0.05;
 }
 
 .mode-toggle-btn.active {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
+  background: var(--primary-gradient);
+  color: var(--text-inverse);
+  border-color: transparent;
+  box-shadow: var(--shadow-md);
 }
 
 .mode-toggle-btn:disabled {
@@ -1409,27 +2006,56 @@ const clearAll = () => {
 
 /* 风格示例展示区域 */
 .style-examples-section {
-  margin-top: 48px;
-  margin-bottom: 48px;
+  margin-top: var(--section-gap);
+  margin-bottom: var(--section-gap);
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+  border: none;
+  border-top: none;
+  border-bottom: none;
+  background: transparent;
+  box-shadow: none;
 }
 
 .style-examples-section h3 {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: var(--font-3xl);
+  font-weight: var(--font-bold);
+  font-family: var(--font-family-display);
   color: var(--text-main);
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-sm);
 }
 
 .section-description {
-  font-size: 14px;
+  font-size: var(--font-base);
   color: var(--text-sub);
-  margin-bottom: 24px;
+  margin-bottom: var(--spacing-xl);
+  line-height: var(--line-height-relaxed);
 }
 
 .style-examples-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-lg);
+  width: 100%;
+}
+
+/* 在创建视图中的样式覆盖 */
+.home-container:has(.create-text-view) .style-examples-grid,
+.create-text-view .style-examples-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1200px) {
+  .home-container:has(.create-text-view) .style-examples-grid,
+  .create-text-view .style-examples-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .home-container:has(.create-text-view) .style-examples-grid,
+  .create-text-view .style-examples-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
@@ -1443,56 +2069,65 @@ const clearAll = () => {
   }
   
   .style-examples-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 16px;
   }
 }
 
 /* 案例演示区域样式 */
 .case-demo-section {
-  margin-top: 48px;
-  margin-bottom: 48px;
+  margin-top: var(--section-gap);
+  margin-bottom: var(--section-gap);
+  animation: fadeIn var(--duration-normal) var(--ease-out);
 }
 
 .case-demo-section h3 {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: var(--font-3xl);
+  font-weight: var(--font-bold);
+  font-family: var(--font-family-display);
   color: var(--text-main);
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-sm);
 }
 
 .case-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 24px;
-  margin-top: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--card-gap);
+  margin-top: var(--spacing-xl);
 }
 
 .empty-cases {
   text-align: center;
-  padding: 64px 24px;
+  padding: var(--spacing-3xl) var(--spacing-xl);
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  margin-top: 24px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-xl);
+  margin-top: var(--spacing-xl);
+  animation: fadeIn var(--duration-normal) var(--ease-out);
 }
 
 .empty-cases .empty-icon {
-  font-size: 64px;
-  margin-bottom: 16px;
+  font-size: 80px;
+  margin-bottom: var(--spacing-lg);
+  opacity: 0.6;
+  filter: grayscale(0.3);
 }
 
 .empty-cases h4 {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: var(--font-xl);
+  font-weight: var(--font-semibold);
+  font-family: var(--font-family-display);
   color: var(--text-main);
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-sm);
 }
 
 .empty-cases p {
-  font-size: 14px;
+  font-size: var(--font-base);
   color: var(--text-sub);
   margin: 0;
+  line-height: var(--line-height-relaxed);
 }
 
 /* 响应式设计 - 案例演示区域 */

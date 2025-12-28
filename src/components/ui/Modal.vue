@@ -101,12 +101,15 @@ if (typeof window !== 'undefined') {
   bottom: 0;
   background: var(--bg-overlay);
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: fadeIn var(--duration-fast) var(--ease-out);
 }
 
 .ui-modal__container {
   position: relative;
   background: var(--bg-card);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
   max-width: 100%;
   max-height: 90vh;
@@ -114,6 +117,18 @@ if (typeof window !== 'undefined') {
   flex-direction: column;
   z-index: var(--z-modal);
   overflow: hidden;
+  animation: scaleIn var(--duration-normal) var(--ease-spring);
+}
+
+.ui-modal__container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--primary-gradient);
+  opacity: 0.2;
 }
 
 .ui-modal__container--sm {

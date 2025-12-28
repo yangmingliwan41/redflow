@@ -110,7 +110,7 @@ const handleBlur = (event: FocusEvent) => {
 
 .ui-input {
   width: 100%;
-  padding: 10px 16px;
+  padding: var(--spacing-md) var(--spacing-lg);
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
   font-size: var(--font-sm);
@@ -118,11 +118,13 @@ const handleBlur = (event: FocusEvent) => {
   background: var(--bg-card);
   transition: all var(--duration-normal) var(--ease-out);
   font-family: inherit;
+  position: relative;
 }
 
 .ui-input:focus {
   outline: none;
   border-color: var(--primary);
+  background: var(--bg-card);
   box-shadow: var(--shadow-focus);
 }
 

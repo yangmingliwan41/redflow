@@ -119,31 +119,43 @@ defineExpose({
   display: flex;
   align-items: flex-start;
   gap: var(--spacing-md);
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-lg) var(--spacing-xl);
   background: var(--bg-card);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--border-color);
-  min-width: 300px;
-  max-width: 400px;
+  min-width: 320px;
+  max-width: 420px;
   pointer-events: auto;
-  animation: slideInRight var(--duration-normal) var(--ease-out);
+  animation: slideInRight var(--duration-normal) var(--ease-spring);
+  position: relative;
+  overflow: hidden;
 }
 
-.ui-toast--success {
-  border-left: 3px solid var(--success);
+.ui-toast::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: var(--radius-full) 0 0 var(--radius-full);
 }
 
-.ui-toast--error {
-  border-left: 3px solid var(--error);
+.ui-toast--success::before {
+  background: var(--success-gradient);
 }
 
-.ui-toast--warning {
-  border-left: 3px solid var(--warning);
+.ui-toast--error::before {
+  background: var(--error-gradient);
 }
 
-.ui-toast--info {
-  border-left: 3px solid var(--info);
+.ui-toast--warning::before {
+  background: var(--warning-gradient);
+}
+
+.ui-toast--info::before {
+  background: var(--info-gradient);
 }
 
 .ui-toast__icon {
@@ -207,6 +219,7 @@ defineExpose({
 .ui-toast__close:hover {
   background: var(--bg-body);
   color: var(--text-main);
+  transform: scale(1.1);
 }
 
 @keyframes slideInRight {

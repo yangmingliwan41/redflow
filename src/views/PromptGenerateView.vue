@@ -1,9 +1,5 @@
 <template>
   <PageContainer size="xl" class="prompt-generate-container">
-    <PageHeader
-      title="提示词生成图片"
-      subtitle="根据主题或提示词生成图片，支持批量生成"
-    />
 
     <!-- 输入面板 -->
     <Card class="input-panel">
@@ -106,8 +102,8 @@
       />
     </Card>
 
-    <!-- 风格示例展示 -->
-    <div class="style-examples-section">
+    <!-- 风格示例展示 - 已隐藏（提示词生图不需要风格示例） -->
+    <!-- <div class="style-examples-section">
       <h3>风格示例展示</h3>
       <p class="section-description">选择不同风格，查看对应的示例效果</p>
       <div class="style-examples-grid">
@@ -121,7 +117,7 @@
           @click="handleStyleExampleClick"
         />
       </div>
-    </div>
+    </div> -->
 
     <!-- 结果展示 -->
     <div v-if="results.length > 0" class="results-section">
@@ -202,6 +198,12 @@ const inputText = ref('')
 const maxCount = ref(10) // 最大生成数量限制
 const isGenerating = ref(false)
 const results = ref<GenerationResult[]>([])
+
+// 暴露给父组件
+defineExpose({
+  isGenerating,
+  results
+})
 
 // 风格示例数据
 const styleExamples = computed(() => {
@@ -705,46 +707,9 @@ onMounted(() => {
   opacity: 1;
 }
 
-/* 风格示例展示区域样式 */
+/* 风格示例展示已隐藏（提示词生图不需要风格示例） */
 .style-examples-section {
-  margin-top: 48px;
-  margin-bottom: 48px;
-}
-
-.style-examples-section h3 {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-main);
-  margin-bottom: 8px;
-}
-
-.section-description {
-  font-size: 14px;
-  color: var(--text-sub);
-  margin-bottom: 24px;
-}
-
-.style-examples-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .style-examples-section {
-    margin-top: 32px;
-    margin-bottom: 32px;
-  }
-  
-  .style-examples-section h3 {
-    font-size: 20px;
-  }
-  
-  .style-examples-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 16px;
-  }
+  display: none;
 }
 </style>
 

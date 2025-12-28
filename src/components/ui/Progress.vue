@@ -106,19 +106,41 @@ withDefaults(defineProps<Props>(), {
 }
 
 .ui-progress__bar--default {
-  background: var(--primary);
+  background: var(--primary-gradient);
+  position: relative;
+  overflow: hidden;
+}
+
+.ui-progress__bar--default::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: progressShine 2s infinite;
+}
+
+@keyframes progressShine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 .ui-progress__bar--success {
-  background: var(--success);
+  background: linear-gradient(90deg, var(--success), var(--success-hover));
 }
 
 .ui-progress__bar--warning {
-  background: var(--warning);
+  background: linear-gradient(90deg, var(--warning), var(--warning-hover));
 }
 
 .ui-progress__bar--error {
-  background: var(--error);
+  background: linear-gradient(90deg, var(--error), var(--error-hover));
 }
 
 .ui-progress__bar--animated {

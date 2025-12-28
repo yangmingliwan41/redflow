@@ -1,38 +1,62 @@
 :root {
-  /* 配色方案 - 现代简约风格 */
-  --bg-body: #F4F5F7;
+  /* ============================================
+     算法诗意设计系统 - Algorithmic Poetics
+     ============================================ */
+  
+  /* 背景色系 - 亮色科技风格 */
+  --bg-body: #F5F7FA;
+  --bg-body-gradient: linear-gradient(135deg, #FFFFFF 0%, #F5F7FA 50%, #F0F4F8 100%);
   --bg-sidebar: #FFFFFF;
+  --bg-sidebar-blur: blur(20px);
   --bg-card: #FFFFFF;
+  --bg-card-hover: #F8FAFC;
   --bg-overlay: rgba(0, 0, 0, 0.5);
   
-  /* 主色调 - 小红书红 */
-  --primary: #FF2442;
-  --primary-hover: #FF4D6A;
-  --primary-active: #D91C36;
-  --primary-light: #FFF0F2;
-  --primary-fade: rgba(255, 36, 66, 0.08);
-  --primary-gradient: linear-gradient(135deg, #FF2442 0%, #FF4D6A 100%);
+  /* 主色调 - 科技蓝 (Tech Blue) */
+  --primary: #4A8EFF;
+  --primary-hover: #3B7FE8;
+  --primary-active: #2D6FD6;
+  --primary-light: rgba(74, 142, 255, 0.1);
+  --primary-fade: rgba(74, 142, 255, 0.08);
+  --primary-gradient: linear-gradient(135deg, #4A8EFF 0%, #3B7FE8 100%);
+  --primary-gradient-hover: linear-gradient(135deg, #3B7FE8 0%, #2D6FD6 100%);
   
-  /* 状态颜色 */
+  /* 辅助色 - 深蓝 (Deep Blue) */
+  --secondary: #2563EB;
+  --secondary-hover: #1D4ED8;
+  --secondary-light: rgba(37, 99, 235, 0.1);
+  --secondary-gradient: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  
+  /* 点缀色 - 红色 (Logo/Accent) */
+  --accent: #FF2442;
+  --accent-hover: #E01E3A;
+  --accent-light: rgba(255, 36, 66, 0.1);
+  --accent-gradient: linear-gradient(135deg, #FF2442 0%, #E01E3A 100%);
+  
+  /* 状态颜色 - 渐变版本 */
   --success: #10B981;
   --success-hover: #059669;
-  --success-light: #D1FAE5;
+  --success-light: rgba(16, 185, 129, 0.1);
   --success-fade: rgba(16, 185, 129, 0.08);
+  --success-gradient: linear-gradient(135deg, #10B981 0%, #059669 100%);
   
   --warning: #F59E0B;
   --warning-hover: #D97706;
-  --warning-light: #FEF3C7;
+  --warning-light: rgba(245, 158, 11, 0.1);
   --warning-fade: rgba(245, 158, 11, 0.08);
+  --warning-gradient: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
   
   --error: #EF4444;
   --error-hover: #DC2626;
-  --error-light: #FEE2E2;
+  --error-light: rgba(239, 68, 68, 0.1);
   --error-fade: rgba(239, 68, 68, 0.08);
+  --error-gradient: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
   
   --info: #3B82F6;
   --info-hover: #2563EB;
-  --info-light: #DBEAFE;
+  --info-light: rgba(59, 130, 246, 0.1);
   --info-fade: rgba(59, 130, 246, 0.08);
+  --info-gradient: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
   
   /* 辅助色 */
   --blue: #3B82F6;
@@ -44,36 +68,40 @@
   --purple: #8B5CF6;
   --purple-light: #EDE9FE;
   
-  /* 文本颜色 */
-  --text-main: #333333;
-  --text-sub: #666666;
-  --text-secondary: #999999;
-  --text-placeholder: #CCCCCC;
-  --text-disabled: #E5E5E5;
+  /* 文本颜色 - 深色系，确保可读性 */
+  --text-main: #1F2937;
+  --text-main-90: rgba(31, 41, 55, 0.9);
+  --text-sub: #6B7280;
+  --text-secondary: #9CA3AF;
+  --text-placeholder: #D1D5DB;
+  --text-disabled: #E5E7EB;
   --text-inverse: #FFFFFF;
   
-  /* 边框颜色 */
-  --border-color: #EEEEEE;
-  --border-hover: #E0E0E0;
-  --border-active: #CCCCCC;
+  /* 边框颜色 - 浅色边框 */
+  --border-color: #E5E7EB;
+  --border-hover: #D1D5DB;
+  --border-active: rgba(74, 142, 255, 0.5);
+  --border-glow: rgba(74, 142, 255, 0.3);
   --border-error: var(--error);
   
-  /* 圆角 */
-  --radius-xl: 24px;
-  --radius-lg: 16px;
-  --radius-md: 12px;
-  --radius-sm: 8px;
-  --radius-xs: 4px;
+  /* 圆角 - 更大更现代 */
+  --radius-xl: 32px;
+  --radius-lg: 20px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+  --radius-xs: 8px;
   --radius-full: 9999px;
+  --radius-pill: 9999px;
   
-  /* 阴影 */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.1);
-  --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.08);
-  --shadow-focus: 0 0 0 3px var(--primary-fade);
+  /* 阴影 - 柔和阴影 */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(74, 142, 255, 0.1);
+  --shadow-glow: 0 0 20px rgba(74, 142, 255, 0.2);
+  --shadow-focus: 0 0 0 3px var(--primary-fade), 0 0 0 1px var(--primary);
   
-  /* 间距系统 (8px基准) */
+  /* 间距系统 - 更有节奏感 (8px基准，使用1.5倍比例) */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
@@ -81,17 +109,26 @@
   --spacing-xl: 32px;
   --spacing-2xl: 48px;
   --spacing-3xl: 64px;
+  --spacing-4xl: 96px;
   
-  /* 动画时长 */
-  --duration-fast: 150ms;
-  --duration-normal: 200ms;
-  --duration-slow: 300ms;
-  --duration-slower: 500ms;
+  /* 页面间距 - 更大留白 */
+  --page-padding: 40px;
+  --section-gap: 48px;
+  --card-gap: 24px;
   
-  /* 缓动函数 */
+  /* 动画时长 - 更流畅 */
+  --duration-instant: 100ms;
+  --duration-fast: 200ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 800ms;
+  
+  /* 缓动函数 - 更自然的动效 */
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   
   /* 响应式断点 */
   --breakpoint-sm: 640px;
@@ -100,10 +137,12 @@
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1536px;
   
-  /* 布局 */
-  --sidebar-width: 260px;
-  --header-height: 64px;
-  --container-max-width: 1200px;
+  /* 布局 - 三栏工作区 */
+  --sidebar-width: 280px;
+  --feature-nav-width: 300px;
+  --header-height: 72px;
+  --container-max-width: 1400px;
+  --content-max-width: 1200px;
   
   /* Z-index层级 */
   --z-base: 1;
@@ -115,26 +154,64 @@
   --z-popover: 1060;
   --z-tooltip: 1070;
   
-  /* 字体大小 */
-  --font-xs: 12px;
-  --font-sm: 14px;
-  --font-base: 16px;
-  --font-lg: 18px;
+  /* 字体系统 - 现代几何无衬线 */
+  --font-family-base: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --font-family-display: 'Manrope', 'Inter', sans-serif;
+  --font-family-mono: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  
+  /* 字体大小 - 更大的比例尺 */
+  --font-xs: 11px;
+  --font-sm: 13px;
+  --font-base: 15px;
+  --font-lg: 17px;
   --font-xl: 20px;
   --font-2xl: 24px;
   --font-3xl: 30px;
-  --font-4xl: 36px;
+  --font-4xl: 38px;
+  --font-5xl: 48px;
+  --font-6xl: 60px;
   
-  /* 行高 */
-  --line-height-tight: 1.25;
+  /* 行高 - 更舒适的阅读 */
+  --line-height-tight: 1.2;
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.75;
+  --line-height-loose: 2;
   
-  /* 字重 */
+  /* 字重 - 更丰富的层次 */
+  --font-light: 300;
   --font-normal: 400;
   --font-medium: 500;
   --font-semibold: 600;
   --font-bold: 700;
+  --font-extrabold: 800;
+  
+  /* 算法艺术相关变量 */
+  --algorithmic-bg-opacity: 0.6;
+  --algorithmic-bg-opacity-hover: 0.8;
+  --algorithmic-bg-opacity-mobile: 0.4;
+  --algorithmic-bg-opacity-reduced-motion: 0.3;
+  
+  /* 算法艺术动画时长 */
+  --algorithmic-transition-duration: 0.3s;
+  --algorithmic-transition-easing: ease;
+  
+  /* 算法艺术粒子效果 */
+  --algorithmic-particle-size-min: 2px;
+  --algorithmic-particle-size-max: 4px;
+  --algorithmic-connection-opacity: 0.2;
+  --algorithmic-connection-distance: 120px;
+  
+  /* 算法艺术流场效果 */
+  --algorithmic-flow-field-resolution: 20px;
+  --algorithmic-flow-field-strength: 0.3;
+  
+  /* 算法艺术噪声效果 */
+  --algorithmic-noise-scale: 0.01;
+  --algorithmic-noise-layers: 3;
+  
+  /* 算法艺术分形效果 */
+  --algorithmic-fractal-depth: 5;
+  --algorithmic-fractal-scale: 0.6;
 }
 
 /* 深色模式支持（预留） */

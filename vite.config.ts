@@ -15,7 +15,14 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
+    },
+    // 确保正确处理本地包的依赖
+    dedupe: ['axios']
+  },
+  optimizeDeps: {
+    include: ['axios'],
+    // 排除 React Hook，因为我们不使用它
+    exclude: ['@hongliu/image-generator/src/hooks']
   },
   define: {
     // 注入版本号和构建时间到应用中

@@ -1,4 +1,4 @@
-# 红流云创 v2.3 —— 别再用命P图了，AI替你上班
+# 红流云创 v2.3.9.2 —— 别再用命P图了，AI替你上班
 
 <div align="center">
 
@@ -9,13 +9,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Vue 3](https://img.shields.io/badge/Vue-3-4FC08D?logo=vue.js)](https://vuejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6?logo=typescript)](https://www.typescriptlang.org/)
-[![Version](https://img.shields.io/badge/version-2.3.4-blue)](https://github.com/your-username/redflow-v2)
+[![Version](https://img.shields.io/badge/version-2.3.9.2-blue)](https://github.com/your-username/redflow-v2)
 
 </div>
 
 ## 项目简介
 
-### 红流云创 v2.3 —— 别再用命P图了，AI替你上班
+### 红流云创 v2.3.9.2.9.2 —— 别再用命P图了，AI替你上班
 
 还在为小红书爆文熬夜磕图、文案删了又改？  
 一张图扣一天，眼快瞎了流量还挂零？  
@@ -273,7 +273,7 @@ docker run -d -p 3000:3000 --name redflow-node redflow-node
 
 ## 支持的风格
 
-红流云创 v2.3 支持以下13种专业风格：
+红流云创 v2.3.9.2 支持以下13种专业风格：
 
 1. **小红书爆款风格** - 清新、精致、有设计感
 2. **海报风格（2K）** - 高分辨率海报风格

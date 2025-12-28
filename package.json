@@ -1,6 +1,6 @@
 {
   "name": "redflow-v2",
-  "version": "2.3.4",
+  "version": "2.3.9.2",
   "description": "AI驱动的图文创作助手，支持文本生成图文和图生图功能",
   "keywords": [
     "vue3",
@@ -32,6 +32,7 @@
     "test:coverage": "vitest --coverage"
   },
   "dependencies": {
+    "@hongliu/image-generator": "file:../hongliu-image-generator/hongliu-image-generator",
     "axios": "^1.6.0",
     "compression": "^1.7.4",
     "express": "^4.18.2",

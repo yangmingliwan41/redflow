@@ -396,19 +396,48 @@ const viewInResult = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  padding: 20px;
+  z-index: var(--z-modal, 1050);
+  padding: var(--spacing-lg);
+  overflow-y: auto;
+  /* 确保内容可以滚动查看 */
+  min-height: 100vh;
+  /* 考虑 feature-nav 的宽度，在剩余空间中居中 */
+  /* 左侧留白：sidebar(280px) + feature-nav(300px) + 间距，确保模态框在右侧区域居中 */
+  padding-left: calc(280px + 300px + var(--spacing-lg));
+  padding-right: var(--spacing-lg);
+  /* 确保在剩余空间中居中 */
+  justify-content: center;
 }
 
 .modal-container {
   background: white;
-  border-radius: 12px;
-  max-width: 1200px;
-  max-height: 90vh;
+  border-radius: var(--radius-xl);
+  max-width: 1400px;
+  max-height: calc(100vh - 2 * var(--spacing-lg));
   width: 100%;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  z-index: calc(var(--z-modal, 1050) + 1);
+  /* 确保在 flexbox 中水平和垂直居中 */
+  margin: auto;
+  /* 确保内容可以完整查看 */
+  overflow: hidden;
+}
+
+/* 当没有 feature-nav 时，恢复完全居中 */
+@media (max-width: 1024px) {
+  .modal-overlay {
+    padding-left: calc(var(--sidebar-width, 280px) + var(--spacing-lg));
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding-left: var(--spacing-lg);
+    padding-right: var(--spacing-lg);
+  }
 }
 
 .modal-header {
@@ -442,15 +471,26 @@ const viewInResult = async () => {
 .modal-content {
   flex: 1;
   overflow-y: auto;
-  padding: 24px;
+  overflow-x: hidden;
+  padding: var(--spacing-xl);
+  min-height: 0; /* 确保 flex 子元素可以缩小 */
+  /* 确保内容可以完整滚动查看 */
+  -webkit-overflow-scrolling: touch;
 }
 
 .modal-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  padding: 20px 24px;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg) var(--spacing-xl);
   border-top: 1px solid var(--border-color, #e5e7eb);
+  background: white;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  flex-shrink: 0;
+  margin-top: auto; /* 确保 footer 在底部 */
 }
 
 /* 图片对比区域 */
@@ -662,8 +702,15 @@ const viewInResult = async () => {
 
 .pages-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .pages-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
 }
 
 .page-card {

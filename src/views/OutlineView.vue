@@ -1,7 +1,7 @@
 <template>
-  <div class="container outline-container">
+  <div class="outline-container">
     <div class="page-header">
-      <div>
+      <div class="page-header-content">
         <h1 class="page-title">编辑大纲</h1>
         <p class="page-subtitle">调整页面顺序，修改文案，打造完美内容</p>
       </div>
@@ -238,45 +238,65 @@ const startGeneration = () => {
 <style scoped>
 .outline-container {
   max-width: 1400px;
-  padding: 32px;
+  margin: 0 auto;
+  padding: var(--spacing-2xl);
+  width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 .page-header {
   max-width: 1400px;
-  margin: 0 auto 30px auto;
+  margin: 0 auto var(--spacing-2xl) auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  padding: 0 var(--spacing-lg);
+}
+
+.page-header-content {
+  flex: 1;
 }
 
 .page-title {
-  font-size: 28px;
-  font-weight: 700;
+  font-size: var(--font-4xl);
+  font-weight: var(--font-extrabold);
+  font-family: var(--font-family-display);
   color: var(--text-main);
-  margin-bottom: 8px;
+  margin: 0 0 var(--spacing-sm) 0;
+  letter-spacing: -0.5px;
 }
 
 .page-subtitle {
-  font-size: 16px;
+  font-size: var(--font-base);
   color: var(--text-sub);
+  margin: 0;
 }
 
 .header-actions {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-md);
+  position: relative;
+  z-index: 20;
 }
 
 .btn {
-  padding: 10px 20px;
+  padding: var(--spacing-md) var(--spacing-lg);
   border-radius: var(--radius-md);
-  font-size: 14px;
-  font-weight: 500;
+  font-size: var(--font-sm);
+  font-weight: var(--font-medium);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--duration-normal) var(--ease-out);
   border: none;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--spacing-sm);
+  position: relative;
+  z-index: 20;
+  pointer-events: auto;
 }
 
 .btn-secondary {
@@ -301,11 +321,20 @@ const startGeneration = () => {
 /* 网格布局 */
 .outline-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 20px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  padding: 0 var(--spacing-lg);
+}
+
+@media (max-width: 768px) {
+  .outline-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .outline-card {

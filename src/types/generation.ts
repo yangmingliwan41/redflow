@@ -72,10 +72,10 @@ export interface GeneratedResult {
 
 // 选项配置
 export const TONE_OPTIONS = [
-  { value: 'enthusiastic', label: '热情种草 (Enthusiastic)' },
-  { value: 'professional', label: '专业理性 (Professional)' },
-  { value: 'emotional', label: '情感共鸣 (Emotional)' },
-  { value: 'minimalist', label: '简洁直接 (Minimalist)' },
+  { value: 'enthusiastic', label: '热情种草' },
+  { value: 'professional', label: '专业理性' },
+  { value: 'emotional', label: '情感共鸣' },
+  { value: 'minimalist', label: '简洁直接' },
 ] as const;
 
 export const LENGTH_OPTIONS = [
@@ -85,9 +85,9 @@ export const LENGTH_OPTIONS = [
 ] as const;
 
 export const COPY_STYLE_OPTIONS = [
-  { value: 'storytelling', label: '故事叙述 (Storytelling)' },
-  { value: 'sales_driven', label: '销售导向 (Sales-driven)' },
-  { value: 'minimalist', label: '极简风格 (Minimalist)' },
+  { value: 'storytelling', label: '故事叙述' },
+  { value: 'sales_driven', label: '销售导向' },
+  { value: 'minimalist', label: '极简风格' },
 ] as const;
 
 export const IMAGE_STYLE_OPTIONS = [

@@ -43,18 +43,21 @@ defineProps<Props>()
 }
 
 .ui-page-header__title {
-  font-size: var(--font-3xl);
-  font-weight: var(--font-bold);
+  font-size: var(--font-4xl);
+  font-weight: var(--font-extrabold);
+  font-family: var(--font-family-display);
   color: var(--text-main);
   margin: 0 0 var(--spacing-sm) 0;
   line-height: var(--line-height-tight);
+  letter-spacing: -0.5px;
 }
 
 .ui-page-header__subtitle {
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   color: var(--text-sub);
   margin: 0;
-  line-height: var(--line-height-normal);
+  line-height: var(--line-height-relaxed);
+  opacity: 0.8;
 }
 
 .ui-page-header__actions {
@@ -62,6 +65,8 @@ defineProps<Props>()
   align-items: center;
   gap: var(--spacing-sm);
   flex-shrink: 0;
+  position: relative;
+  z-index: 20;
 }
 
 .ui-page-header__extra {

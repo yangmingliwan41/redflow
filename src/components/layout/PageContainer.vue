@@ -18,7 +18,13 @@ withDefaults(defineProps<Props>(), {
 .ui-page-container {
   width: 100%;
   margin: 0 auto;
-  padding: var(--spacing-lg);
+  padding: var(--page-padding);
+  position: relative;
+  z-index: 1;
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+  border: none;
+  background: transparent;
+  box-shadow: none;
 }
 
 .ui-page-container--sm {

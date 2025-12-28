@@ -1,7 +1,7 @@
 <template>
-  <div class="container">
+  <div class="result-container">
     <div class="page-header">
-      <div>
+      <div class="page-header-content">
         <h1 class="page-title">创作完成</h1>
         <p class="page-subtitle">恭喜！你的小红书图文已生成完毕，共 {{ store.images.length }} 张</p>
       </div>
@@ -14,7 +14,7 @@
           </svg>
           一键下载
         </button>
-        <button class="btn" @click="startOver" style="background: white; border: 1px solid var(--border-color);">
+        <button class="btn btn-secondary" @click="startOver">
           再来一篇
         </button>
         <button class="btn btn-abandon" @click="handleAbandon">
@@ -24,7 +24,7 @@
     </div>
 
     <!-- 项目信息编辑卡片 -->
-    <div class="card project-info-card">
+    <div class="card project-info-card" style="max-width: 1400px; margin: 0 auto var(--spacing-lg) auto;">
       <div class="project-header">
         <h3>项目信息</h3>
         <button v-if="!isEditing" class="edit-btn" @click="startEdit">
@@ -70,7 +70,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" style="max-width: 1400px; margin: 0 auto;">
       <div class="grid-cols-4">
         <div v-for="image in store.images" :key="image.index" class="image-card group">
           <!-- Image Area -->
@@ -443,7 +443,9 @@ const handleImageLoad = (image: any) => {
 
 const startOver = () => {
   store.reset()
-  router.push('/')
+  // 根据当前模式跳转到对应的生成功能页面
+  // ResultView 主要用于文本生成图文模式，所以跳转到文本生成页面
+  router.push('/create/text')
 }
 
 const handleAbandon = () => {
@@ -586,34 +588,55 @@ const handleRegenerate = async (image: any) => {
 </script>
 
 <style scoped>
+.result-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--spacing-2xl);
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
 .page-header {
   max-width: 1400px;
-  margin: 0 auto 30px auto;
+  margin: 0 auto var(--spacing-2xl) auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
+  z-index: 10;
+  width: 100%;
+  padding: 0 var(--spacing-lg);
+}
+
+.page-header-content {
+  flex: 1;
 }
 
 .header-actions {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-md);
   align-items: center;
+  position: relative;
+  z-index: 20;
 }
 
 .btn-download-all {
   background: var(--primary);
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: var(--spacing-md) var(--spacing-lg);
   border-radius: var(--radius-md);
-  font-size: 14px;
-  font-weight: 500;
+  font-size: var(--font-sm);
+  font-weight: var(--font-medium);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--duration-normal) var(--ease-out);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--spacing-sm);
+  position: relative;
+  z-index: 20;
+  pointer-events: auto;
 }
 
 .btn-download-all:hover {
@@ -623,28 +646,34 @@ const handleRegenerate = async (image: any) => {
 }
 
 .page-title {
-  font-size: 28px;
-  font-weight: 700;
+  font-size: var(--font-4xl);
+  font-weight: var(--font-extrabold);
+  font-family: var(--font-family-display);
   color: var(--text-main);
-  margin-bottom: 8px;
+  margin: 0 0 var(--spacing-sm) 0;
+  letter-spacing: -0.5px;
 }
 
 .page-subtitle {
-  font-size: 16px;
+  font-size: var(--font-base);
   color: var(--text-sub);
+  margin: 0;
 }
 
 .btn {
-  padding: 10px 20px;
+  padding: var(--spacing-md) var(--spacing-lg);
   border-radius: var(--radius-md);
-  font-size: 14px;
-  font-weight: 500;
+  font-size: var(--font-sm);
+  font-weight: var(--font-medium);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--duration-normal) var(--ease-out);
   border: none;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--spacing-sm);
+  position: relative;
+  z-index: 20;
+  pointer-events: auto;
 }
 
 .btn-primary {
@@ -658,8 +687,15 @@ const handleRegenerate = async (image: any) => {
 
 .grid-cols-4 {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .grid-cols-4 {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
 }
 
 .image-card {

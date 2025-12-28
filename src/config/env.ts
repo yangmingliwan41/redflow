@@ -12,6 +12,9 @@ export interface EnvConfig {
   googleApiKey?: string
   googleEndpoint?: string
   googleModel?: string
+  zhipuApiKey?: string
+  zhipuEndpoint?: string
+  zhipuModel?: string
   
   // 功能开关
   mockMode?: boolean
@@ -20,6 +23,9 @@ export interface EnvConfig {
   
   // 自定义配置
   customImagePrompt?: string
+  
+  // 企业微信通知配置
+  wechatWorkWebhookUrl?: string
 }
 
 /**
@@ -33,10 +39,14 @@ export function loadEnvConfig(): EnvConfig {
     googleApiKey: localStorage.getItem(STORAGE_KEYS.GOOGLE_API_KEY) || undefined,
     googleEndpoint: localStorage.getItem(STORAGE_KEYS.GOOGLE_API_ENDPOINT) || undefined,
     googleModel: localStorage.getItem(STORAGE_KEYS.GOOGLE_MODEL) || undefined,
+    zhipuApiKey: localStorage.getItem(STORAGE_KEYS.ZHIPU_API_KEY) || undefined,
+    zhipuEndpoint: localStorage.getItem(STORAGE_KEYS.ZHIPU_API_ENDPOINT) || undefined,
+    zhipuModel: localStorage.getItem(STORAGE_KEYS.ZHIPU_MODEL) || undefined,
     mockMode: localStorage.getItem(STORAGE_KEYS.MOCK_MODE) === 'true',
     debugMode: localStorage.getItem(STORAGE_KEYS.PROMPT_DEBUG_MODE) === 'true',
     imagePromptDebugMode: localStorage.getItem(STORAGE_KEYS.IMAGE_PROMPT_DEBUG_MODE) === 'true',
-    customImagePrompt: localStorage.getItem(STORAGE_KEYS.CUSTOM_IMAGE_PROMPT) || undefined
+    customImagePrompt: localStorage.getItem(STORAGE_KEYS.CUSTOM_IMAGE_PROMPT) || undefined,
+    wechatWorkWebhookUrl: localStorage.getItem('WECHAT_WORK_WEBHOOK_URL') || undefined
   }
 }
 
@@ -73,6 +83,30 @@ export function saveEnvConfig(config: Partial<EnvConfig>): void {
       localStorage.setItem(STORAGE_KEYS.GOOGLE_MODEL, config.googleModel)
     } else {
       localStorage.removeItem(STORAGE_KEYS.GOOGLE_MODEL)
+    }
+  }
+  
+  if (config.zhipuApiKey !== undefined) {
+    if (config.zhipuApiKey) {
+      localStorage.setItem(STORAGE_KEYS.ZHIPU_API_KEY, config.zhipuApiKey)
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.ZHIPU_API_KEY)
+    }
+  }
+  
+  if (config.zhipuEndpoint !== undefined) {
+    if (config.zhipuEndpoint) {
+      localStorage.setItem(STORAGE_KEYS.ZHIPU_API_ENDPOINT, config.zhipuEndpoint)
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.ZHIPU_API_ENDPOINT)
+    }
+  }
+  
+  if (config.zhipuModel !== undefined) {
+    if (config.zhipuModel) {
+      localStorage.setItem(STORAGE_KEYS.ZHIPU_MODEL, config.zhipuModel)
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.ZHIPU_MODEL)
     }
   }
   

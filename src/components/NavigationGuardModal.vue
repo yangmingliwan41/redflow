@@ -47,22 +47,38 @@ const handleConfirm = () => {
 .guard-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 2000;
+  background: var(--bg-overlay);
+  z-index: var(--z-modal);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: var(--spacing-xl);
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: fadeIn var(--duration-fast) var(--ease-out);
 }
 
 .guard-modal-content {
-  background: white;
-  border-radius: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
   width: 100%;
-  max-width: 480px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.3s ease-out;
+  max-width: 520px;
+  box-shadow: var(--shadow-lg);
+  animation: scaleIn var(--duration-normal) var(--ease-spring);
+  position: relative;
+  overflow: hidden;
+}
+
+.guard-modal-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--primary-gradient);
+  opacity: 0.3;
 }
 
 @keyframes slideUp {
@@ -83,16 +99,17 @@ const handleConfirm = () => {
 }
 
 .warning-icon {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 16px;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto var(--spacing-lg);
   border-radius: 50%;
-  background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--warning) 0%, var(--warning-hover) 100%);
+  color: var(--text-inverse);
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: scaleIn 0.3s ease-out;
+  animation: scaleIn var(--duration-normal) var(--ease-spring);
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
 }
 
 @keyframes scaleIn {
@@ -105,17 +122,19 @@ const handleConfirm = () => {
 }
 
 .guard-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-main, #333);
-  margin: 0 0 12px;
+  font-size: var(--font-2xl);
+  font-weight: var(--font-bold);
+  font-family: var(--font-family-display);
+  color: var(--text-main);
+  margin: 0 0 var(--spacing-md);
+  line-height: var(--line-height-tight);
 }
 
 .guard-subtitle {
-  font-size: 14px;
-  color: var(--text-sub, #666);
+  font-size: var(--font-sm);
+  color: var(--text-sub);
   margin: 0;
-  line-height: 1.6;
+  line-height: var(--line-height-relaxed);
 }
 
 .guard-modal-footer {
@@ -139,13 +158,31 @@ const handleConfirm = () => {
 }
 
 .btn-primary {
-  background: var(--primary, #1890ff);
-  color: white;
+  background: var(--primary-gradient);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--duration-slow) var(--ease-out);
 }
 
 .btn-primary:hover {
-  background: var(--primary-hover, #40a9ff);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+  background: var(--primary-gradient-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.btn-primary:hover::before {
+  left: 100%;
 }
 </style>

@@ -3,7 +3,16 @@
     <PageHeader
       title="历史记录"
       subtitle="查看和管理你的创作历史"
-    />
+    >
+      <template #actions>
+        <Button variant="secondary" @click="$router.push('/')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          返回
+        </Button>
+      </template>
+    </PageHeader>
 
     <div v-if="loading" class="loading-state">
       <div class="spinner"></div>
@@ -293,7 +302,30 @@ watch(() => route.path, (newPath) => {
 .loading-state,
 .empty-state {
   text-align: center;
-  padding: 80px 20px;
+  padding: var(--spacing-4xl) var(--spacing-xl);
+  color: var(--text-sub);
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+  background: var(--bg-card);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-xl);
+  margin-top: var(--section-gap);
+}
+
+.empty-state svg {
+  color: var(--text-secondary);
+  opacity: 0.5;
+  margin-bottom: var(--spacing-lg);
+}
+
+.empty-state h3 {
+  font-size: var(--font-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-main);
+  margin-bottom: var(--spacing-sm);
+}
+
+.empty-state p {
+  font-size: var(--font-base);
   color: var(--text-sub);
 }
 
@@ -313,27 +345,70 @@ watch(() => route.path, (newPath) => {
 
 .history-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .history-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .history-card {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
-  overflow: visible; /* 改为 visible，确保删除按钮可见 */
-  transition: all 0.2s;
+  overflow: visible;
+  transition: all var(--duration-normal) var(--ease-spring);
   border: 1px solid var(--border-color);
   position: relative;
+  animation: scaleIn var(--duration-normal) var(--ease-out);
+  animation-fill-mode: both;
+  box-shadow: var(--shadow-sm);
+}
+
+.history-card:nth-child(1) { animation-delay: 0.05s; }
+.history-card:nth-child(2) { animation-delay: 0.1s; }
+.history-card:nth-child(3) { animation-delay: 0.15s; }
+.history-card:nth-child(4) { animation-delay: 0.2s; }
+.history-card:nth-child(5) { animation-delay: 0.25s; }
+.history-card:nth-child(6) { animation-delay: 0.3s; }
+
+.history-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(74, 142, 255, 0.04), rgba(37, 99, 235, 0.04));
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-out);
+  border-radius: inherit;
+  pointer-events: none;
 }
 
 .history-card .card-image-wrapper {
-  overflow: hidden; /* 只在图片区域使用 overflow: hidden */
+  overflow: hidden;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  transition: transform var(--duration-normal) var(--ease-out);
 }
 
 .history-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--primary);
+  background: var(--bg-card-hover);
+}
+
+.history-card:hover::before {
+  opacity: 1;
+}
+
+.history-card:hover .card-image-wrapper {
+  transform: scale(1.05);
 }
 
 .card-image-wrapper {
@@ -342,7 +417,7 @@ watch(() => route.path, (newPath) => {
 
 .card-image {
   width: 100%;
-  height: 200px;
+  height: 220px;
   overflow: hidden;
   background: var(--bg-body);
   position: relative;
@@ -352,29 +427,41 @@ watch(() => route.path, (newPath) => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+.history-card:hover .card-image img {
+  transform: scale(1.1);
 }
 
 .card-type-badge {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--text-inverse);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-xs);
+  font-weight: var(--font-semibold);
+  box-shadow: var(--shadow-sm);
 }
 
 .card-content {
-  padding: 16px;
+  padding: var(--spacing-lg);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
 .card-content h4 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 8px;
+  font-size: var(--font-lg);
+  font-weight: var(--font-semibold);
+  font-family: var(--font-family-display);
+  margin-bottom: var(--spacing-sm);
   color: var(--text-main);
+  line-height: var(--line-height-tight);
 }
 
 .card-meta {

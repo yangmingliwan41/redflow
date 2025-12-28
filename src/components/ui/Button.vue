@@ -74,6 +74,8 @@ const handleClick = (event: MouseEvent) => {
   user-select: none;
   white-space: nowrap;
   text-decoration: none;
+  z-index: 20;
+  pointer-events: auto;
 }
 
 .ui-button:focus-visible {
@@ -109,19 +111,37 @@ const handleClick = (event: MouseEvent) => {
 
 /* 变体 */
 .ui-button--primary {
-  background: var(--primary);
+  background: var(--primary-gradient);
   color: var(--text-inverse);
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.ui-button--primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--duration-slow) var(--ease-out);
 }
 
 .ui-button--primary:hover:not(:disabled):not(.ui-button--loading) {
-  background: var(--primary-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  background: var(--primary-gradient-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.ui-button--primary:hover:not(:disabled):not(.ui-button--loading)::before {
+  left: 100%;
 }
 
 .ui-button--primary:active:not(:disabled):not(.ui-button--loading) {
-  background: var(--primary-active);
   transform: translateY(0);
+  box-shadow: var(--shadow-md);
 }
 
 .ui-button--secondary {
@@ -131,9 +151,11 @@ const handleClick = (event: MouseEvent) => {
 }
 
 .ui-button--secondary:hover:not(:disabled):not(.ui-button--loading) {
-  border-color: var(--border-hover);
+  border-color: var(--primary);
   background: var(--bg-body);
-  transform: translateY(-1px);
+  color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 142, 255, 0.15);
 }
 
 .ui-button--danger {

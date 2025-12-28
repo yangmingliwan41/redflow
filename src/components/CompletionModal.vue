@@ -118,21 +118,25 @@ const handleCancel = () => {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 2000;
+  z-index: var(--z-modal, 1050);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: var(--spacing-lg);
   backdrop-filter: blur(4px);
+  overflow-y: auto;
 }
 
 .completion-modal-content {
   background: white;
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   width: 100%;
   max-width: 500px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
   animation: slideUp 0.3s ease-out;
+  margin: auto;
+  position: relative;
+  z-index: calc(var(--z-modal, 1050) + 1);
 }
 
 @keyframes slideUp {

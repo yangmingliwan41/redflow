@@ -263,6 +263,50 @@ export async function saveHistoryItem(
     }
 
     await trySetItem(itemsToSave)
+    
+    // 同步到最近项目（workspace）
+    try {
+      const { useWorkspaceStore } = await import('../../stores/workspaceStore')
+      const workspaceStore = useWorkspaceStore()
+      
+      // 根据历史记录创建或更新workspace
+      const workspaceType = result.mode === ProcessingMode.IMAGE_TO_IMAGE ? 'image' 
+        : result.mode === ProcessingMode.PROMPT_TO_IMAGE ? 'prompt' 
+        : 'text'
+      
+      const workspaceName = result.projectName || result.topic || result.analysis?.name || '未命名项目'
+      const thumbnail = result.generatedImageUrl || result.originalImageUrl || result.pages?.[0]?.imageUrl
+      
+      // 检查是否已存在对应的workspace
+      const existingWorkspace = workspaceStore.allWorkspaces.find(w => w.relatedId === result.id)
+      
+      if (existingWorkspace) {
+        // 更新现有workspace
+        existingWorkspace.name = workspaceName
+        existingWorkspace.updatedAt = Date.now()
+        existingWorkspace.thumbnail = thumbnail
+        existingWorkspace.status = 'completed'
+        await workspaceStore.saveWorkspaces()
+        await workspaceStore.addToRecent(existingWorkspace.id)
+      } else {
+        // 创建新workspace
+        const workspace = await workspaceStore.createWorkspace({
+          name: workspaceName,
+          type: workspaceType,
+          relatedId: result.id,
+          metadata: {
+            historyItem: result,
+            thumbnail: thumbnail
+          }
+        }, userId)
+        await workspaceStore.addToRecent(workspace.id)
+      }
+      
+      logger.debug('✅ 历史记录已同步到最近项目')
+    } catch (workspaceError) {
+      logger.warn('⚠️ 同步到最近项目失败（不影响历史记录保存）:', workspaceError)
+      // 不抛出错误，因为历史记录保存已经成功
+    }
   } catch (error) {
     logger.error('❌ Failed to save history:', error)
     throw error

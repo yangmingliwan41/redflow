@@ -1,12 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import HistoryView from '../views/HistoryView.vue'
-import SettingsView from '../views/SettingsView.vue'
+import WorkspaceView from '../views/WorkspaceView.vue'
+import CreateView from '../views/CreateView.vue'
+import CreateTextView from '../views/CreateTextView.vue'
+import CreateImageView from '../views/CreateImageView.vue'
+import CreatePromptView from '../views/CreatePromptView.vue'
 import OutlineView from '../views/OutlineView.vue'
 import GenerateView from '../views/GenerateView.vue'
 import ResultView from '../views/ResultView.vue'
-import PromptGenerateView from '../views/PromptGenerateView.vue'
+import RequirementAnalysisView from '../views/RequirementAnalysisView.vue'
+import SettingsView from '../views/SettingsView.vue'
+import ManageHistoryView from '../views/ManageHistoryView.vue'
+import ManageDraftsView from '../views/ManageDraftsView.vue'
+import ManageTemplatesView from '../views/ManageTemplatesView.vue'
 import { useTextGeneratorStore } from '../stores/textGenerator'
 
 const router = createRouter({
@@ -16,6 +23,46 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
+    },
+    {
+      path: '/workspace',
+      name: 'workspace',
+      component: WorkspaceView
+    },
+    {
+      path: '/workspace/:id',
+      name: 'workspace-detail',
+      component: WorkspaceView
+    },
+    {
+      path: '/create',
+      component: CreateView,
+      children: [
+        {
+          path: '',
+          redirect: '/create/text'
+        },
+        {
+          path: 'text',
+          name: 'create-text',
+          component: CreateTextView
+        },
+        {
+          path: 'image',
+          name: 'create-image',
+          component: CreateImageView
+        },
+        {
+          path: 'prompt',
+          name: 'create-prompt',
+          component: CreatePromptView
+        },
+        {
+          path: 'space-design',
+          name: 'create-space-design',
+          component: () => import('../views/SpaceDesignView.vue')
+        }
+      ]
     },
     {
       path: '/text-outline',
@@ -33,28 +80,83 @@ const router = createRouter({
       component: ResultView
     },
     {
-      path: '/history',
-      name: 'history',
-      component: HistoryView
+      path: '/plan',
+      children: [
+        {
+          path: 'requirement',
+          name: 'plan-requirement',
+          component: RequirementAnalysisView
+        },
+        {
+          path: 'content',
+          name: 'plan-content',
+          component: () => import('../views/PlanningView.vue')
+        },
+        {
+          path: 'calendar',
+          name: 'plan-calendar',
+          component: () => import('../views/CalendarView.vue')
+        }
+      ]
+    },
+    {
+      path: '/manage',
+      children: [
+        {
+          path: 'history',
+          name: 'manage-history',
+          component: ManageHistoryView
+        },
+        {
+          path: 'drafts',
+          name: 'manage-drafts',
+          component: ManageDraftsView
+        },
+        {
+          path: 'templates',
+          name: 'manage-templates',
+          component: ManageTemplatesView
+        }
+      ]
     },
     {
       path: '/settings',
       name: 'settings',
       component: SettingsView
     },
+    // 兼容旧路由
+    {
+      path: '/requirement-analysis',
+      redirect: '/plan/requirement'
+    },
+    {
+      path: '/planning',
+      redirect: '/plan/content'
+    },
+    {
+      path: '/calendar',
+      redirect: '/plan/calendar'
+    },
+    {
+      path: '/history',
+      redirect: '/manage/history'
+    },
     {
       path: '/prompt-generate',
-      name: 'prompt-generate',
-      component: PromptGenerateView
+      redirect: '/create/prompt'
+    },
+    {
+      path: '/dashboard',
+      redirect: '/'
     }
   ]
 })
 
 // 受保护的路由（生成过程中不能访问的路由）
-const protectedRoutes = ['/', '/history', '/settings', '/prompt-generate']
+const protectedRoutes = ['/', '/workspace', '/manage/history', '/settings', '/create/prompt']
 
 // 生成流程路由（生成过程中可以访问的路由）
-const generationFlowRoutes = ['/text-outline', '/text-generate', '/text-result']
+const generationFlowRoutes = ['/text-outline', '/text-generate', '/text-result', '/create']
 
 router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
   const store = useTextGeneratorStore()

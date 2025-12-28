@@ -3,7 +3,16 @@
     <PageHeader
       title="系统设置"
       subtitle="配置API密钥和服务设置"
-    />
+    >
+      <template #actions>
+        <Button variant="secondary" @click="goBack">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          返回
+        </Button>
+      </template>
+    </PageHeader>
 
     <!-- 模拟模式开关 -->
     <div class="mock-mode-section">
@@ -167,6 +176,147 @@
               @blur="saveApiKey('DEEPSEEK_MODEL', deepseekModel)"
               class="api-input"
             />
+          </div>
+        </div>
+      </div>
+
+      <!-- 智谱AI配置卡片 -->
+      <div class="config-card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <div class="card-icon" style="background: #1677FF;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <div>
+              <h3>智谱AI API</h3>
+              <p class="card-subtitle">文本生成服务（支持联网搜索）</p>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- API Key 卡片式输入 -->
+          <div class="api-key-card" :class="{ 'editing': editingZhipu, 'saved': savedZhipu }">
+            <div class="api-key-card-header">
+              <div class="api-key-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span>API Key</span>
+                <span v-if="savedZhipu" class="saved-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  已保存
+                </span>
+                <span v-else-if="editingZhipu" class="editing-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  编辑中
+                </span>
+              </div>
+              <div class="api-key-actions">
+                <button
+                  v-if="!editingZhipu"
+                  type="button"
+                  class="action-btn edit-btn"
+                  @click="startEdit('zhipu')"
+                  title="编辑"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+                <button
+                  v-if="editingZhipu"
+                  type="button"
+                  class="action-btn save-btn"
+                  @click="saveApiKeyCard('zhipu')"
+                  :disabled="savingZhipu"
+                  title="保存"
+                >
+                  <svg v-if="!savingZhipu" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span v-else class="spinner-small"></span>
+                </button>
+                <button
+                  v-if="editingZhipu"
+                  type="button"
+                  class="action-btn cancel-btn"
+                  @click="cancelEdit('zhipu')"
+                  title="取消"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="action-btn visibility-btn"
+                  @click="toggleVisibility('zhipu')"
+                  :title="showZhipuKey ? '隐藏' : '显示'"
+                >
+                  <svg v-if="showZhipuKey" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                  <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="api-key-card-body">
+              <div v-if="!editingZhipu && zhipuApiKey" class="api-key-display">
+                <code class="api-key-masked">{{ showZhipuKey ? zhipuApiKey : maskApiKey(zhipuApiKey) }}</code>
+                <p class="api-key-hint">点击编辑按钮修改</p>
+              </div>
+              <div v-else class="api-key-input-wrapper">
+                <input
+                  :type="showZhipuKey ? 'text' : 'password'"
+                  v-model="zhipuApiKey"
+                  @focus="editingZhipu = true"
+                  placeholder="输入API Key"
+                  class="api-key-input"
+                  :class="{ 'has-value': zhipuApiKey }"
+                />
+                <p class="api-key-hint">
+                  推荐使用：
+                  <a href="https://open.bigmodel.cn/" target="_blank">智谱AI开放平台</a>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>API Endpoint（可选）</label>
+            <input
+              v-model="zhipuEndpoint"
+              type="text"
+              placeholder="https://open.bigmodel.cn/api/paas/v4/chat/completions"
+              @blur="saveApiKey('ZHIPU_API_ENDPOINT', zhipuEndpoint)"
+              class="api-input"
+            />
+          </div>
+          <div class="form-group">
+            <label>Model（可选）</label>
+            <input
+              v-model="zhipuModel"
+              type="text"
+              placeholder="glm-4.7"
+              @blur="saveApiKey('ZHIPU_MODEL', zhipuModel)"
+              class="api-input"
+            />
+            <p class="form-hint">支持的模型：glm-4.7（支持联网搜索）</p>
           </div>
         </div>
       </div>
@@ -480,8 +630,9 @@
     <div class="info-section">
       <h3>使用说明</h3>
       <ul>
-        <li>文本生成使用 <strong>DeepSeek</strong> API，需要配置 DeepSeek API Key</li>
+        <li>文本生成使用 <strong>DeepSeek</strong> 或 <strong>智谱AI</strong> API，需要配置相应的 API Key</li>
         <li>图片生成使用 <strong>Google GenAI</strong> API（OpenAI兼容模式），支持自定义端点</li>
+        <li>智谱AI GLM-4.7 支持联网搜索功能，可作为 DeepSeek 的备选方案</li>
         <li>所有配置保存在浏览器本地存储中，不会上传到服务器</li>
         <li>API Key 配置后立即生效，无需重启</li>
         <li>点击眼睛图标可以显示/隐藏 API Key，保护隐私</li>
@@ -497,8 +648,16 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { PageContainer, PageHeader } from '../components/layout'
+import { Button } from '../components/ui'
 import { getAllStyleConfigs, getStyleConfig, saveCustomPrompt as saveStylePromptConfig, resetCustomPrompt } from '../config/stylePrompts'
+
+const router = useRouter()
+
+const goBack = () => {
+  router.push('/')
+}
 
 const deepseekApiKey = ref('')
 const deepseekEndpoint = ref('')
@@ -506,9 +665,13 @@ const deepseekModel = ref('')
 const googleApiKey = ref('')
 const googleEndpoint = ref('')
 const googleModel = ref('')
+const zhipuApiKey = ref('')
+const zhipuEndpoint = ref('')
+const zhipuModel = ref('')
 
 const showDeepseekKey = ref(false)
 const showGoogleKey = ref(false)
+const showZhipuKey = ref(false)
 const mockMode = ref(false)
 const customImagePrompt = ref('')
 const showPromptDebug = ref(false)
@@ -522,12 +685,16 @@ const showDefaultPrompt = ref(false)
 // API Key 卡片编辑状态
 const editingDeepseek = ref(false)
 const editingGoogle = ref(false)
+const editingZhipu = ref(false)
 const savingDeepseek = ref(false)
 const savingGoogle = ref(false)
+const savingZhipu = ref(false)
 const savedDeepseek = ref(false)
 const savedGoogle = ref(false)
+const savedZhipu = ref(false)
 const originalDeepseekKey = ref('')
 const originalGoogleKey = ref('')
+const originalZhipuKey = ref('')
 
 // 打码显示的API Key
 const displayDeepseekKey = computed(() => {
@@ -558,42 +725,52 @@ const maskApiKey = (key: string): string => {
   return `${start}${middle}${end}`
 }
 
-const toggleVisibility = (type: 'deepseek' | 'google') => {
+const toggleVisibility = (type: 'deepseek' | 'google' | 'zhipu') => {
   if (type === 'deepseek') {
     showDeepseekKey.value = !showDeepseekKey.value
-  } else {
+  } else if (type === 'google') {
     showGoogleKey.value = !showGoogleKey.value
+  } else {
+    showZhipuKey.value = !showZhipuKey.value
   }
 }
 
 // 开始编辑API Key
-const startEdit = (type: 'deepseek' | 'google') => {
+const startEdit = (type: 'deepseek' | 'google' | 'zhipu') => {
   if (type === 'deepseek') {
     editingDeepseek.value = true
     savedDeepseek.value = false
     originalDeepseekKey.value = deepseekApiKey.value
-  } else {
+  } else if (type === 'google') {
     editingGoogle.value = true
     savedGoogle.value = false
     originalGoogleKey.value = googleApiKey.value
+  } else {
+    editingZhipu.value = true
+    savedZhipu.value = false
+    originalZhipuKey.value = zhipuApiKey.value
   }
 }
 
 // 取消编辑
-const cancelEdit = (type: 'deepseek' | 'google') => {
+const cancelEdit = (type: 'deepseek' | 'google' | 'zhipu') => {
   if (type === 'deepseek') {
     deepseekApiKey.value = originalDeepseekKey.value
     editingDeepseek.value = false
     savedDeepseek.value = false
-  } else {
+  } else if (type === 'google') {
     googleApiKey.value = originalGoogleKey.value
     editingGoogle.value = false
     savedGoogle.value = false
+  } else {
+    zhipuApiKey.value = originalZhipuKey.value
+    editingZhipu.value = false
+    savedZhipu.value = false
   }
 }
 
 // 保存API Key（卡片式）
-const saveApiKeyCard = async (type: 'deepseek' | 'google') => {
+const saveApiKeyCard = async (type: 'deepseek' | 'google' | 'zhipu') => {
   if (type === 'deepseek') {
     savingDeepseek.value = true
     try {
@@ -610,7 +787,7 @@ const saveApiKeyCard = async (type: 'deepseek' | 'google') => {
     } finally {
       savingDeepseek.value = false
     }
-  } else {
+  } else if (type === 'google') {
     savingGoogle.value = true
     try {
       saveApiKey('GOOGLE_API_KEY', googleApiKey.value)
@@ -626,6 +803,22 @@ const saveApiKeyCard = async (type: 'deepseek' | 'google') => {
     } finally {
       savingGoogle.value = false
     }
+  } else {
+    savingZhipu.value = true
+    try {
+      saveApiKey('ZHIPU_API_KEY', zhipuApiKey.value)
+      editingZhipu.value = false
+      savedZhipu.value = true
+      originalZhipuKey.value = zhipuApiKey.value
+      // 3秒后隐藏保存提示
+      setTimeout(() => {
+        savedZhipu.value = false
+      }, 3000)
+    } catch (error) {
+      console.error('保存失败:', error)
+    } finally {
+      savingZhipu.value = false
+    }
   }
 }
 
@@ -639,9 +832,13 @@ const loadApiKeys = () => {
     googleApiKey.value = localStorage.getItem('GOOGLE_API_KEY') || ''
     googleEndpoint.value = localStorage.getItem('GOOGLE_API_ENDPOINT') || 'https://api.laozhang.ai/v1/chat/completions'
     googleModel.value = localStorage.getItem('GOOGLE_MODEL') || 'gemini-3-pro-image-preview'
+    zhipuApiKey.value = localStorage.getItem('ZHIPU_API_KEY') || ''
+    zhipuEndpoint.value = localStorage.getItem('ZHIPU_API_ENDPOINT') || 'https://open.bigmodel.cn/api/paas/v4/chat/completions'
+    zhipuModel.value = localStorage.getItem('ZHIPU_MODEL') || 'glm-4.7'
     // 初始化原始值
     originalDeepseekKey.value = deepseekApiKey.value
     originalGoogleKey.value = googleApiKey.value
+    originalZhipuKey.value = zhipuApiKey.value
     
     // 加载模拟模式设置
     const savedMockMode = localStorage.getItem('MOCK_MODE')
@@ -833,6 +1030,8 @@ const saveApiKey = (key: string, value: string) => {
         deepseekApiKey.value = cleaned
       } else if (key === 'GOOGLE_API_KEY') {
         googleApiKey.value = cleaned
+      } else if (key === 'ZHIPU_API_KEY') {
+        zhipuApiKey.value = cleaned
       }
       
       console.log('API Key 已保存:', {
@@ -848,6 +1047,8 @@ const saveApiKey = (key: string, value: string) => {
 
 // 清理本地存储（API 密钥、历史记录、用户信息等）
 const clearLocalStorage = () => {
+  // 触发清除缓存事件，让 HomeView 显示引导
+  window.dispatchEvent(new CustomEvent('redflow:clearCache'))
   if (typeof window === 'undefined' || !window.localStorage) return
 
   const confirmed = window.confirm(
@@ -866,6 +1067,7 @@ const clearLocalStorage = () => {
       if (
         k.startsWith('DEEPSEEK_') ||
         k.startsWith('GOOGLE_') ||
+        k.startsWith('ZHIPU_') ||
         k === 'MOCK_MODE' ||
         k === 'CUSTOM_IMAGE_PROMPT' ||
         k === 'PROMPT_DEBUG_MODE' ||
@@ -876,6 +1078,12 @@ const clearLocalStorage = () => {
         localStorage.removeItem(k)
       }
     })
+    // 清除引导标记，让新用户引导重新显示
+    localStorage.removeItem('redflow_guide_seen')
+    
+    // 触发清除缓存事件，让 HomeView 显示引导
+    window.dispatchEvent(new CustomEvent('redflow:clearCache'))
+    
     alert('本地存储已清理完毕。\n\n建议刷新页面后重新开始使用，并在此处重新配置 API Key。')
   } catch (e) {
     console.error('清理本地存储失败:', e)
@@ -944,11 +1152,33 @@ onMounted(() => {
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
   overflow: hidden;
-  transition: all 0.2s;
+  transition: all var(--duration-normal) var(--ease-spring);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.config-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(74, 142, 255, 0.02), rgba(37, 99, 235, 0.02));
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-out);
+  pointer-events: none;
 }
 
 .config-card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-4px);
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+}
+
+.config-card:hover::before {
+  opacity: 1;
 }
 
 .card-header {
@@ -1229,11 +1459,19 @@ onMounted(() => {
 }
 
 .mock-mode-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 24px;
-  color: white;
+  padding: var(--spacing-xl);
+  color: var(--text-main);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.mock-mode-card:hover {
+  transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+  border-color: var(--border-hover);
 }
 
 .mock-mode-header {
@@ -1244,10 +1482,10 @@ onMounted(() => {
 }
 
 .mock-mode-header h3 {
-  font-size: 18px;
-  font-weight: 700;
-  margin: 0 0 4px 0;
-  color: white;
+  font-size: var(--font-lg);
+  font-weight: var(--font-bold);
+  margin: 0 0 var(--spacing-xs) 0;
+  color: var(--text-main);
 }
 
 .mock-mode-desc {
@@ -1322,13 +1560,16 @@ onMounted(() => {
 /* API Key 卡片式输入样式 */
 .api-key-card {
   background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 2px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 20px;
-  margin-bottom: 20px;
-  transition: all 0.3s ease;
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  transition: all var(--duration-normal) var(--ease-spring);
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
 .api-key-card::before {
@@ -1441,22 +1682,43 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  background: var(--bg-body);
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: var(--text-sub);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--duration-normal) var(--ease-spring);
   padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--primary-gradient);
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-out);
 }
 
 .action-btn:hover:not(:disabled) {
-  background: var(--primary-fade);
+  background: var(--bg-card-hover);
   border-color: var(--primary);
   color: var(--primary);
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(255, 126, 126, 0.2);
+}
+
+.action-btn:hover:not(:disabled)::before {
+  opacity: 0.05;
 }
 
 .action-btn:active:not(:disabled) {
@@ -1475,15 +1737,16 @@ onMounted(() => {
 }
 
 .save-btn {
-  background: var(--success);
-  color: white;
-  border-color: var(--success);
+  background: var(--success-gradient);
+  color: var(--text-inverse);
+  border-color: transparent;
+  box-shadow: var(--shadow-md);
 }
 
 .save-btn:hover:not(:disabled) {
-  background: var(--success-hover);
-  border-color: var(--success-hover);
-  color: white;
+  background: linear-gradient(135deg, var(--success-hover) 0%, var(--success) 100%);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: var(--shadow-hover);
 }
 
 .cancel-btn:hover:not(:disabled) {
@@ -1523,16 +1786,24 @@ onMounted(() => {
 
 .api-key-masked {
   display: block;
-  padding: 12px 16px;
-  background: var(--bg-body);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  font-size: 13px;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-sm);
   color: var(--text-main);
   word-break: break-all;
   user-select: all;
   cursor: text;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.api-key-masked:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
 }
 
 .api-key-input-wrapper {
@@ -1543,21 +1814,24 @@ onMounted(() => {
 
 .api-key-input {
   width: 100%;
-  padding: 12px 16px;
+  padding: var(--spacing-md) var(--spacing-lg);
   border: 2px solid var(--border-color);
   border-radius: var(--radius-md);
-  font-size: 14px;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  transition: all 0.2s ease;
-  background: white;
+  font-size: var(--font-sm);
+  font-family: var(--font-family-mono);
+  transition: all var(--duration-normal) var(--ease-out);
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: var(--text-main);
 }
 
 .api-key-input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-fade);
-  background: white;
+  box-shadow: var(--shadow-focus);
+  background: var(--bg-card-hover);
+  transform: translateY(-1px);
 }
 
 .api-key-input.has-value {
