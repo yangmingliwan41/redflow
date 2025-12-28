@@ -7,8 +7,11 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# 先复制 hongliu-image-generator 依赖到正确位置（相对于 /app，即 /hongliu-image-generator/hongliu-image-generator）
+COPY hongliu-image-generator/hongliu-image-generator /hongliu-image-generator/hongliu-image-generator
+
 # 复制依赖文件
-COPY package*.json ./
+COPY redflow/package*.json ./
 
 # 安装依赖（修复esbuild ETXTBSY错误）
 # 清理npm缓存，使用npm install代替npm ci，添加重试机制
@@ -18,7 +21,7 @@ RUN npm cache clean --force && \
     (sleep 5 && npm install --legacy-peer-deps --prefer-offline --no-audit)
 
 # 复制源代码
-COPY . .
+COPY redflow/ ./
 
 # 构建应用
 RUN npm run build
@@ -32,8 +35,11 @@ LABEL maintainer="红流云创团队"
 
 WORKDIR /app
 
+# 先复制 hongliu-image-generator 依赖到正确位置（生产阶段也需要，因为npm install需要它）
+COPY hongliu-image-generator/hongliu-image-generator /hongliu-image-generator/hongliu-image-generator
+
 # 复制依赖文件
-COPY package*.json ./
+COPY redflow/package*.json ./
 
 # 只安装生产依赖
 RUN npm cache clean --force && \
@@ -44,7 +50,7 @@ RUN npm cache clean --force && \
 COPY --from=builder /app/dist ./dist
 
 # 复制服务器文件
-COPY server.js ./
+COPY redflow/server.js ./
 
 # 暴露端口
 EXPOSE 3000

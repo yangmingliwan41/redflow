@@ -4,8 +4,8 @@
 services:
   redflow-nginx:
     build:
-      context: .
-      dockerfile: Dockerfile.nginx
+      context: ..
+      dockerfile: redflow/Dockerfile.nginx
       args:
         - VERSION=2.3.9.2
       # 不推荐在compose文件中设置no-cache，应该在构建时通过命令行参数指定

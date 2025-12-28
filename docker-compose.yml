@@ -7,8 +7,8 @@
 services:
   redflow-nginx:
     build:
-      context: .
-      dockerfile: Dockerfile.nginx
+      context: ..
+      dockerfile: redflow/Dockerfile.nginx
       args:
         - VERSION=2.3.9.2
     image: redflow-nginx:2.3.9.2
