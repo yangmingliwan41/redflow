@@ -117,6 +117,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTextGeneratorStore } from '../stores/textGenerator'
 import { generatePageImage } from '../services/ai'
+import { generateContentCopy } from '../services/ai/contentCopy'
 // 历史记录保存已移至 ResultView 统一处理
 import { v4 as uuidv4 } from 'uuid'
 import { PageContainer, PageHeader } from '../components/layout'
@@ -291,6 +292,102 @@ const startGenerationTask = async () => {
   const selectedStyle = store.style || localStorage.getItem('TEXT_STYLE') || undefined
   
   try {
+    // 启动文案生成任务（与图片生成并发，不依赖图片）
+    const contentCopyTask = (async () => {
+      // 检查是否需要重新生成文案
+      // 1. 如果已有文案，检查是否是模拟文案
+      // 2. 如果主题或大纲变化，需要重新生成
+      if (store.contentCopy) {
+        const isMockContent = store.contentCopy.includes('【模拟模式') || 
+                              store.contentCopy.includes('模拟文案') ||
+                              store.contentCopy.includes('测试文案')
+        if (isMockContent) {
+          console.log(`[${taskId}] 检测到模拟文案，将重新生成真实文案`)
+          // 清除模拟文案
+          store.clearContentCopy()
+        } else {
+          // 检查主题或大纲是否变化（通过比较主题和大纲内容）
+          // 如果主题或大纲变化，清除旧文案并重新生成
+          const currentTopic = store.topic || ''
+          const currentOutlineHash = store.outline.raw ? 
+            store.outline.raw.substring(0, 100) : '' // 使用大纲前100字符作为简单hash
+          
+          // 从localStorage获取上次生成时的主题和大纲hash
+          const lastTopic = localStorage.getItem('LAST_COPY_TOPIC') || ''
+          const lastOutlineHash = localStorage.getItem('LAST_COPY_OUTLINE_HASH') || ''
+          
+          if (currentTopic !== lastTopic || currentOutlineHash !== lastOutlineHash) {
+            console.log(`[${taskId}] 检测到主题或大纲变化，清除旧文案并重新生成`, {
+              currentTopic,
+              lastTopic,
+              currentOutlineHash: currentOutlineHash.substring(0, 50),
+              lastOutlineHash: lastOutlineHash.substring(0, 50)
+            })
+            // 清除旧文案
+            store.clearContentCopy()
+            // 更新记录
+            localStorage.setItem('LAST_COPY_TOPIC', currentTopic)
+            localStorage.setItem('LAST_COPY_OUTLINE_HASH', currentOutlineHash)
+          } else {
+            console.log(`[${taskId}] 主题和大纲未变化，文案已存在，跳过生成`)
+            return
+          }
+        }
+      } else {
+        // 没有文案，记录当前主题和大纲hash
+        const currentTopic = store.topic || ''
+        const currentOutlineHash = store.outline.raw ? 
+          store.outline.raw.substring(0, 100) : ''
+        localStorage.setItem('LAST_COPY_TOPIC', currentTopic)
+        localStorage.setItem('LAST_COPY_OUTLINE_HASH', currentOutlineHash)
+      }
+
+      try {
+        const isMockMode = localStorage.getItem('MOCK_MODE') === 'true'
+        if (isMockMode) {
+          console.warn(`[${taskId}] ⚠️ 检测到模拟模式已启用，文案将返回测试内容`)
+          console.warn(`[${taskId}] 💡 提示：要使用真实API，请在"系统设置"页面关闭"测试模式（模拟API）"开关`)
+        }
+        console.log(`[${taskId}] 🚀 开始生成文案，调用DeepSeek API...`, {
+          topic: store.topic,
+          pagesCount: store.outline.pages.length,
+          outlineLength: store.outline.raw.length,
+          isMockMode: isMockMode
+        })
+        store.setGeneratingCopy(true)
+        
+        const copyResult = await generateContentCopy(
+          store.outline.raw,
+          store.outline.pages,
+          store.topic
+        )
+        
+        store.setContentCopy(copyResult.content)
+        // 更新记录的主题和大纲hash
+        const currentTopic = store.topic || ''
+        const currentOutlineHash = store.outline.raw ? 
+          store.outline.raw.substring(0, 100) : ''
+        localStorage.setItem('LAST_COPY_TOPIC', currentTopic)
+        localStorage.setItem('LAST_COPY_OUTLINE_HASH', currentOutlineHash)
+        
+        console.log(`[${taskId}] ✅ 文案生成成功，内容长度: ${copyResult.content.length} 字符`, {
+          usage: copyResult.usage,
+          topic: currentTopic
+        })
+      } catch (e: any) {
+        console.error(`[${taskId}] ❌ 文案生成失败:`, e)
+        console.error(`[${taskId}] 错误详情:`, {
+          message: e.message,
+          stack: e.stack,
+          name: e.name
+        })
+        // 文案生成失败不影响图片生成，只记录错误
+        store.setGeneratingCopy(false)
+        // 显示错误提示给用户
+        error.value = `文案生成失败: ${e.message || '未知错误'}。图片生成不受影响。`
+      }
+    })()
+
     // 确定需要生成的页面列表
     let pagesToGenerate = [...store.outline.pages];
     
@@ -341,7 +438,8 @@ const startGenerationTask = async () => {
       }
     })
 
-    await Promise.all(tasks)
+    // 并发执行图片生成和文案生成
+    await Promise.allSettled([Promise.all(tasks), contentCopyTask])
     
     const taskDuration = Date.now() - taskStartTime
     console.log(`=== [${taskId}] 生成任务完成，耗时: ${taskDuration}ms ===`)

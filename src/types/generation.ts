@@ -62,6 +62,8 @@ export interface GeneratedResult {
   // 项目信息
   projectName?: string;
   projectDescription?: string;
+  // 文案内容（文本生成图文模式）
+  contentCopy?: string;
   // 创作模式标识
   mode?: ProcessingMode.TEXT_TO_IMAGE | ProcessingMode.IMAGE_TO_IMAGE | ProcessingMode.PROMPT_TO_IMAGE;
   // 提示词生成模式的数据

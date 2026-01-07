@@ -85,6 +85,10 @@ export interface TextGeneratorState {
 
   // 导航守卫提示显示状态
   showNavigationGuard: boolean
+
+  // 文案生成相关
+  contentCopy: string | null // 生成的完整文案
+  isGeneratingCopy: boolean // 是否正在生成文案
 }
 
 const STORAGE_KEY = 'text-generator-state'
@@ -124,7 +128,9 @@ function saveState(state: TextGeneratorState) {
       progress: state.progress,
       images: slimImages,
       taskId: state.taskId,
-      recordId: state.recordId
+      recordId: state.recordId,
+      contentCopy: state.contentCopy,
+      isGeneratingCopy: state.isGeneratingCopy
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave))
   } catch (e) {
@@ -155,7 +161,9 @@ export const useTextGeneratorStore = defineStore('textGenerator', {
       images: saved.images || [],
       taskId: saved.taskId || null,
       recordId: saved.recordId || null,
-      showNavigationGuard: false
+      showNavigationGuard: false,
+      contentCopy: saved.contentCopy || null,
+      isGeneratingCopy: false
     }
   },
 
@@ -546,6 +554,8 @@ export const useTextGeneratorStore = defineStore('textGenerator', {
       this.taskId = null
       this.recordId = null
       this.showNavigationGuard = false
+      this.contentCopy = null
+      this.isGeneratingCopy = false
       localStorage.removeItem(STORAGE_KEY)
     },
 
@@ -573,6 +583,26 @@ export const useTextGeneratorStore = defineStore('textGenerator', {
     // 隐藏导航守卫提示
     hideNavigationGuardModal() {
       this.showNavigationGuard = false
+    },
+
+    // 设置文案生成状态
+    setGeneratingCopy(isGenerating: boolean) {
+      this.isGeneratingCopy = isGenerating
+      this.saveToStorage()
+    },
+
+    // 设置生成的文案
+    setContentCopy(content: string) {
+      this.contentCopy = content
+      this.isGeneratingCopy = false
+      this.saveToStorage()
+    },
+
+    // 清除文案
+    clearContentCopy() {
+      this.contentCopy = null
+      this.isGeneratingCopy = false
+      this.saveToStorage()
     }
   }
 })

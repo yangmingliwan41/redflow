@@ -26,10 +26,18 @@ export interface DeepSeekResponse {
 
 /**
  * 调用 DeepSeek API
+ * @param prompt 用户提示词
+ * @param systemPrompt 系统提示词
+ * @param options 可选参数（temperature, top_p等）
  */
 export async function callDeepSeekAPI(
   prompt: string,
-  systemPrompt?: string
+  systemPrompt?: string,
+  options?: {
+    temperature?: number
+    top_p?: number
+    max_tokens?: number
+  }
 ): Promise<{ text: string; usage: TokenUsage }> {
   const apiKey = getApiKeyFromStorage(STORAGE_KEYS.DEEPSEEK_API_KEY)
   if (!apiKey) {
@@ -55,15 +63,39 @@ export async function callDeepSeekAPI(
   try {
     logger.debug('DeepSeek API 请求:', { endpoint, model, promptLength: prompt.length })
 
+    // 使用传入的 temperature，默认为 0.7
+    const temperature = options?.temperature ?? 0.7
+    const top_p = options?.top_p
+    const max_tokens = options?.max_tokens
+    
+    const requestBody: any = {
+      model,
+      messages,
+      temperature,
+      stream: false
+    }
+    
+    // 如果提供了 top_p，添加到请求中（增加输出多样性）
+    if (top_p !== undefined) {
+      requestBody.top_p = top_p
+    }
+    
+    // 如果提供了 max_tokens，添加到请求中
+    if (max_tokens !== undefined) {
+      requestBody.max_tokens = max_tokens
+    }
+    
+    logger.debug('DeepSeek API 请求参数:', { 
+      temperature, 
+      top_p, 
+      max_tokens,
+      promptLength: prompt.length 
+    })
+    
     const response = await fetch(endpoint, {
       method: 'POST',
       headers,
-      body: JSON.stringify({
-        model,
-        messages,
-        temperature: 0.7,
-        stream: false
-      })
+      body: JSON.stringify(requestBody)
     })
 
     if (!response.ok) {

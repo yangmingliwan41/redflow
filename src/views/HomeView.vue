@@ -743,6 +743,14 @@ const restoreFromHistoryItem = (historyItem: GeneratedResult) => {
     textStore.projectDescription = historyItem.projectDescription
   }
 
+  // 恢复文案内容
+  if (historyItem.contentCopy) {
+    textStore.setContentCopy(historyItem.contentCopy)
+  } else {
+    // 如果没有保存的文案，清除当前文案
+    textStore.clearContentCopy()
+  }
+
   // 恢复大纲和页面数据
   if (historyItem.outline && historyItem.pages) {
     const pages = historyItem.pages.map(p => ({

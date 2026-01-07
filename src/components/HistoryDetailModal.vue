@@ -1,5 +1,5 @@
 <template>
-  <div v-if="visible" class="modal-overlay" @click.self="close">
+  <div v-if="visible && item" class="modal-overlay" @click.self="close">
     <div class="modal-container">
       <div class="modal-header">
         <h2>创作详情</h2>
@@ -237,6 +237,21 @@
             </div>
           </div>
 
+          <!-- 文案内容 -->
+          <div v-if="item.contentCopy" class="info-section">
+            <h3>文案内容</h3>
+            <div class="markdown-content" style="white-space: pre-wrap; line-height: 1.8;">{{ item.contentCopy }}</div>
+            <div class="action-buttons">
+              <button class="btn btn-secondary" @click="copyText(item.contentCopy || '')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                复制文案
+              </button>
+            </div>
+          </div>
+
           <!-- 图片展示 -->
           <div v-if="item.pages && item.pages.length > 0" class="pages-section">
             <h3>生成页面 ({{ item.pages.length }} 页)</h3>
@@ -297,7 +312,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { GeneratedResult } from '../types'
 import { useTextGeneratorStore } from '../stores/textGenerator'
@@ -356,6 +371,15 @@ const viewInResult = async () => {
     textStore.setTopic(props.item.topic)
     textStore.setProjectName(props.item.projectName || '')
     textStore.setProjectDescription(props.item.projectDescription || '')
+    
+    // 恢复文案内容
+    if (props.item.contentCopy) {
+      textStore.setContentCopy(props.item.contentCopy)
+    } else {
+      // 如果没有保存的文案，清除当前文案
+      textStore.clearContentCopy()
+    }
+    
     textStore.setOutline(props.item.outline || '', props.item.pages.map(p => ({
       index: p.index,
       type: p.title === '封面' ? 'cover' : 'content',

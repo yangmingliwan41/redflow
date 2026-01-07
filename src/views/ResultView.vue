@@ -138,6 +138,125 @@
       </div>
     </div>
 
+    <!-- 文案展示区域 -->
+    <div class="card content-copy-card" style="max-width: 1400px; margin: 40px auto;">
+      <div class="project-header" style="margin-bottom: 20px;">
+        <h3>文案内容</h3>
+        <div style="display: flex; gap: 12px;">
+          <button 
+            v-if="store.isGeneratingCopy" 
+            class="btn btn-secondary" 
+            disabled
+            style="opacity: 0.6; cursor: not-allowed;"
+          >
+            <div class="spinner" style="width: 14px; height: 14px; border-width: 2px; margin-right: 6px; display: inline-block;"></div>
+            文案生成中...
+          </button>
+          <button 
+            v-else-if="store.contentCopy && !isEditingCopy" 
+            class="edit-btn" 
+            @click="startEditCopy"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            编辑
+          </button>
+          <button 
+            v-if="store.contentCopy && !isEditingCopy" 
+            class="btn btn-secondary" 
+            @click="regenerateContentCopy"
+            :disabled="store.isGeneratingCopy"
+            style="font-size: 14px;"
+            title="重新生成文案"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px; display: inline-block;">
+              <path d="M23 4v6h-6"></path>
+              <path d="M1 20v-6h6"></path>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            重新生成
+          </button>
+          <button 
+            v-if="store.contentCopy && !isEditingCopy" 
+            class="btn btn-secondary" 
+            @click="copyContentCopy"
+            style="font-size: 14px;"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px; display: inline-block;">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            复制文案
+          </button>
+        </div>
+      </div>
+      
+      <!-- 模拟模式提示 -->
+      <div 
+        v-if="store.contentCopy && (store.contentCopy.includes('【模拟模式') || store.contentCopy.includes('模拟文案'))" 
+        class="mock-mode-alert"
+        style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 16px; margin-bottom: 20px;"
+      >
+        <div style="display: flex; align-items: start; gap: 12px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="2" style="flex-shrink: 0; margin-top: 2px;">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: #856404; margin-bottom: 8px;">
+              ⚠️ 当前处于模拟模式
+            </div>
+            <div style="color: #856404; font-size: 14px; line-height: 1.6;">
+              当前显示的是测试文案，不会调用真实的DeepSeek API。要生成真实文案，请前往
+              <router-link to="/settings" style="color: #0066cc; text-decoration: underline;">
+                "系统设置"
+              </router-link>
+              页面，关闭"测试模式（模拟API）"开关，然后重新生成。
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 加载状态 -->
+      <div v-if="!store.contentCopy && !store.isGeneratingCopy" class="content-copy-placeholder">
+        <p style="color: var(--text-sub); text-align: center; padding: 40px;">
+          文案生成中或未生成，请稍候...
+        </p>
+      </div>
+      
+      <div v-else-if="store.isGeneratingCopy" class="content-copy-loading">
+        <div class="spinner" style="width: 24px; height: 24px; margin: 0 auto;"></div>
+        <p style="text-align: center; color: var(--text-sub); margin-top: 12px;">正在生成文案...</p>
+      </div>
+      
+      <!-- 文案内容卡片 -->
+      <div v-else-if="!isEditingCopy && store.contentCopy" class="content-copy-display">
+        <div class="content-copy-text-card">
+          <div class="content-copy-text" style="white-space: pre-wrap; line-height: 1.8; color: var(--text-primary);">
+            {{ store.contentCopy }}
+          </div>
+        </div>
+      </div>
+      
+      <!-- 编辑模式 -->
+      <div v-else-if="isEditingCopy" class="content-copy-edit">
+        <textarea 
+          v-model="editContentCopy" 
+          placeholder="输入文案内容"
+          class="form-textarea"
+          rows="15"
+          style="width: 100%; font-family: inherit; font-size: 14px; line-height: 1.8;"
+        ></textarea>
+        <div class="form-actions" style="margin-top: 16px;">
+          <button class="btn btn-secondary" @click="cancelEditCopy">取消</button>
+          <button class="btn btn-primary" @click="saveContentCopy">保存</button>
+        </div>
+      </div>
+    </div>
+
     <ImagePreviewModal
       :visible="showImagePreview"
       :url="previewImageUrl"
@@ -157,6 +276,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTextGeneratorStore } from '../stores/textGenerator'
 import { generatePageImage } from '../services/ai'
+import { generateContentCopy } from '../services/ai/contentCopy'
 import { getCurrentUser } from '../services/storage'
 import { saveHistoryItem } from '../services/storage/history'
 import { ProcessingMode, ProcessingStatus } from '../types'
@@ -183,6 +303,8 @@ const currentDebugInfo = ref<{
 const isEditing = ref(false)
 const editProjectName = ref('')
 const editProjectDescription = ref('')
+const isEditingCopy = ref(false)
+const editContentCopy = ref('')
 
 // 项目信息编辑
 const startEdit = () => {
@@ -214,6 +336,7 @@ const saveProjectInfo = async () => {
       projectName: store.projectName,
       projectDescription: store.projectDescription,
       outline: store.outline.raw,
+      contentCopy: store.contentCopy || null, // 保存生成的文案
       pages: store.outline.pages.map((page, idx) => ({
         index: page.index,
         title: page.type === 'cover' ? '封面' : `第${idx}页`,
@@ -228,6 +351,95 @@ const saveProjectInfo = async () => {
     }
     
       await saveHistoryItem(user.id, historyItem as any)
+  }
+}
+
+// 文案编辑相关
+const startEditCopy = () => {
+  editContentCopy.value = store.contentCopy || ''
+  isEditingCopy.value = true
+}
+
+const cancelEditCopy = () => {
+  isEditingCopy.value = false
+  editContentCopy.value = ''
+}
+
+const saveContentCopy = () => {
+  if (editContentCopy.value.trim()) {
+    store.setContentCopy(editContentCopy.value.trim())
+    isEditingCopy.value = false
+  }
+}
+
+const copyContentCopy = async () => {
+  if (store.contentCopy) {
+    try {
+      await navigator.clipboard.writeText(store.contentCopy)
+      alert('文案已复制到剪贴板')
+    } catch (err) {
+      // 降级方案
+      const textarea = document.createElement('textarea')
+      textarea.value = store.contentCopy
+      document.body.appendChild(textarea)
+      textarea.select()
+      try {
+        document.execCommand('copy')
+        alert('文案已复制到剪贴板')
+      } catch (e) {
+        alert('复制失败，请手动复制')
+      }
+      document.body.removeChild(textarea)
+    }
+  }
+}
+
+// 重新生成文案
+const regenerateContentCopy = async () => {
+  if (store.isGeneratingCopy) {
+    return
+  }
+
+  if (!store.topic || !store.outline.pages.length) {
+    alert('无法重新生成：缺少主题或大纲信息')
+    return
+  }
+
+  try {
+    console.log('🔄 开始重新生成文案...', {
+      topic: store.topic,
+      outlineLength: store.outline.raw.length
+    })
+    store.setGeneratingCopy(true)
+    // 清除旧文案，显示生成中状态
+    store.clearContentCopy()
+    // 清除记录的主题和大纲hash，强制重新生成
+    localStorage.removeItem('LAST_COPY_TOPIC')
+    localStorage.removeItem('LAST_COPY_OUTLINE_HASH')
+    
+    const copyResult = await generateContentCopy(
+      store.outline.raw,
+      store.outline.pages,
+      store.topic
+    )
+    
+    store.setContentCopy(copyResult.content)
+    // 更新记录的主题和大纲hash
+    const currentTopic = store.topic || ''
+    const currentOutlineHash = store.outline.raw ? 
+      store.outline.raw.substring(0, 100) : ''
+    localStorage.setItem('LAST_COPY_TOPIC', currentTopic)
+    localStorage.setItem('LAST_COPY_OUTLINE_HASH', currentOutlineHash)
+    
+    console.log('✅ 文案重新生成成功', { 
+      contentLength: copyResult.content.length,
+      usage: copyResult.usage,
+      topic: currentTopic
+    })
+  } catch (e: any) {
+    console.error('❌ 文案重新生成失败:', e)
+    alert(`文案重新生成失败: ${e.message || '未知错误'}`)
+    store.setGeneratingCopy(false)
   }
 }
 
@@ -328,6 +540,7 @@ const saveHistoryToResultView = async (userId: string) => {
       projectName: store.projectName,
       projectDescription: store.projectDescription,
       outline: store.outline.raw,
+      contentCopy: store.contentCopy || null, // 保存生成的文案
       pages: pagesToSave.map((page, idx) => ({
         index: idx, // 重新索引，确保连续
         title: page.type === 'cover' ? '封面' : `第${idx + 1}页`,
@@ -482,34 +695,39 @@ const downloadAllContent = () => {
   }
 }
 
-// 下载完整文字内容（从outline.pages提取，纯文本格式）
+// 下载完整文字内容（优先使用生成的文案，否则从outline.pages提取）
 const downloadTextContent = () => {
   try {
-    // 从outline.pages中提取完整文字内容
     let textContent = ''
     
-    // 添加项目信息（可选）
-    if (store.projectName || store.topic) {
-      textContent += `${store.projectName || store.topic}\n\n`
-    }
-    
-    if (store.projectDescription) {
-      textContent += `${store.projectDescription}\n\n`
-      textContent += `${'='.repeat(50)}\n\n`
-    }
-    
-    // 添加每页内容
-    store.outline.pages.forEach((page, idx) => {
-      const pageTitle = page.type === 'cover' ? '封面' : `第${idx}页`
-      textContent += `【${pageTitle}】\n\n`
-      
-      if (page.content) {
-        textContent += `${page.content}\n\n`
+    // 优先使用生成的文案
+    if (store.contentCopy) {
+      textContent = store.contentCopy
+    } else {
+      // 如果没有文案，从outline.pages中提取完整文字内容
+      // 添加项目信息（可选）
+      if (store.projectName || store.topic) {
+        textContent += `${store.projectName || store.topic}\n\n`
       }
       
-      // 不包含配图建议，只包含文字内容
-      textContent += `${'-'.repeat(50)}\n\n`
-    })
+      if (store.projectDescription) {
+        textContent += `${store.projectDescription}\n\n`
+        textContent += `${'='.repeat(50)}\n\n`
+      }
+      
+      // 添加每页内容
+      store.outline.pages.forEach((page, idx) => {
+        const pageTitle = page.type === 'cover' ? '封面' : `第${idx}页`
+        textContent += `【${pageTitle}】\n\n`
+        
+        if (page.content) {
+          textContent += `${page.content}\n\n`
+        }
+        
+        // 不包含配图建议，只包含文字内容
+        textContent += `${'-'.repeat(50)}\n\n`
+      })
+    }
     
     // 创建下载链接（纯文本格式）
     const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' })
@@ -864,6 +1082,77 @@ const handleRegenerate = async (image: any) => {
 .btn-abandon:hover {
   background: #fff1f0;
   border-color: #ff4d4f;
+}
+
+/* 文案内容卡片样式 */
+.content-copy-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.content-copy-placeholder {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.content-copy-loading {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.content-copy-display {
+  padding: 0;
+}
+
+.content-copy-text-card {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 24px;
+  margin: 0;
+  border: 1px solid #f0f0f0;
+  min-height: 200px;
+  max-height: 600px;
+  overflow-y: auto;
+  transition: all 0.2s;
+}
+
+.content-copy-text-card:hover {
+  border-color: #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.content-copy-text {
+  white-space: pre-wrap;
+  line-height: 1.8;
+  color: #333;
+  font-size: 15px;
+  word-wrap: break-word;
+  word-break: break-word;
+  margin: 0;
+}
+
+.content-copy-text-card::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content-copy-text-card::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 3px;
+}
+
+.content-copy-text-card::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 3px;
+}
+
+.content-copy-text-card::-webkit-scrollbar-thumb:hover {
+  background: #ccc;
+}
+
+.content-copy-edit {
+  padding: 20px;
 }
 </style>
 

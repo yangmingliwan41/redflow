@@ -218,6 +218,14 @@ const restoreFromHistoryItem = (historyItem: GeneratedResult, showDetail: boolea
     store.projectDescription = historyItem.projectDescription
   }
 
+  // 恢复文案内容
+  if (historyItem.contentCopy) {
+    store.setContentCopy(historyItem.contentCopy)
+  } else {
+    // 如果没有保存的文案，清除当前文案
+    store.clearContentCopy()
+  }
+
   // 恢复大纲和页面数据
   if (historyItem.outline && historyItem.pages) {
     const pages = historyItem.pages.map(p => ({
