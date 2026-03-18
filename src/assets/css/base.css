@@ -1,0 +1,278 @@
+/**
+ * 基础样式重置与全局样式
+ * 算法诗意设计系统
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-base);
+  line-height: var(--line-height-normal);
+  color: var(--text-main);
+  background: var(--bg-body);
+  background-image: var(--bg-body-gradient);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* 滚动条样式 - 现代玻璃态 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-body);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(74, 142, 255, 0.3);
+  border-radius: var(--radius-full);
+  transition: background var(--duration-normal) var(--ease-out);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(74, 142, 255, 0.5);
+}
+
+/* 选择文本样式 */
+::selection {
+  background: var(--primary);
+  color: var(--text-inverse);
+}
+
+::-moz-selection {
+  background: var(--primary);
+  color: var(--text-inverse);
+}
+
+/* 链接样式 */
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+/* 按钮基础样式重置 */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 输入框基础样式重置 */
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-placeholder);
+  opacity: 1;
+}
+
+/* 图片样式 */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 列表样式重置 */
+ul,
+ol {
+  list-style: none;
+}
+
+/* 标题样式 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-display);
+  font-weight: var(--font-bold);
+  line-height: var(--line-height-tight);
+  color: var(--text-main);
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--font-5xl);
+  font-weight: var(--font-extrabold);
+}
+
+h2 {
+  font-size: var(--font-4xl);
+  font-weight: var(--font-bold);
+}
+
+h3 {
+  font-size: var(--font-3xl);
+  font-weight: var(--font-semibold);
+}
+
+h4 {
+  font-size: var(--font-2xl);
+  font-weight: var(--font-semibold);
+}
+
+h5 {
+  font-size: var(--font-xl);
+  font-weight: var(--font-medium);
+}
+
+h6 {
+  font-size: var(--font-lg);
+  font-weight: var(--font-medium);
+}
+
+/* 玻璃态效果工具类 */
+.glass {
+  background: var(--bg-card);
+  backdrop-filter: var(--bg-sidebar-blur);
+  -webkit-backdrop-filter: var(--bg-sidebar-blur);
+  border: 1px solid var(--border-color);
+}
+
+.glass-strong {
+  background: var(--bg-card-hover);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid var(--border-hover);
+}
+
+/* 渐变文字 */
+.gradient-text {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 发光效果 */
+.glow {
+  box-shadow: var(--shadow-glow);
+}
+
+.glow-primary {
+  box-shadow: 0 0 20px rgba(255, 126, 126, 0.4);
+}
+
+/* 动画工具类 */
+.fade-in {
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+}
+
+.slide-up {
+  animation: slideUp var(--duration-normal) var(--ease-out);
+}
+
+.scale-in {
+  animation: scaleIn var(--duration-normal) var(--ease-spring);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 响应式工具类 */
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 240px;
+    --feature-nav-width: 0px;
+    --page-padding: 24px;
+    --section-gap: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 0px;
+    --page-padding: 16px;
+    --section-gap: 24px;
+  }
+  
+  body {
+    font-size: var(--font-sm);
+  }
+  
+  h1 {
+    font-size: var(--font-3xl);
+  }
+  
+  h2 {
+    font-size: var(--font-2xl);
+  }
+}
+
+/* 减少动画（无障碍） */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

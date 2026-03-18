@@ -1,0 +1,30 @@
+# 红流云创 v2.3.9.2 - Node.js部署配置
+# 注意：更新代码后必须使用 --no-cache 参数重新构建，否则会使用缓存的旧代码
+
+services:
+  redflow-node:
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+      args:
+        - VERSION=2.3.9.2
+      # 不推荐在compose文件中设置no-cache，应该在构建时通过命令行参数指定
+      # 使用命令: docker-compose -f docker-compose.node.yml build --no-cache
+    image: redflow-node:2.3.9.2
+    container_name: redflow-node
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+
+
+

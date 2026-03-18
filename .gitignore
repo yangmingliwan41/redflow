@@ -1,0 +1,63 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+.nyc_output
+
+# Production
+dist/
+build/
+
+# Misc
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+Thumbs.db
+
+# Git
+.git/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Temporary documentation (analysis, troubleshooting, etc.)
+# 临时分析文档
+docs/*_ANALYSIS.md
+docs/*_OPTIMIZATION.md
+# Docker 问题排查文档
+docs/DOCKER_*.md
+# 临时问题排查文档
+docs/*_ISSUE.md
+# 临时操作指南（保留必要的测试指南）
+docs/ADD_*.md
+docs/MANUAL_*.md
+
+
+

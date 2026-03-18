@@ -1,0 +1,28 @@
+# 红流云创 v2.3.9.2 Docker部署配置
+# 使用方式：
+# - Nginx部署: docker-compose -f docker-compose.nginx.yml up -d
+# - Node.js部署: docker-compose -f docker-compose.node.yml up -d
+# - 或直接使用: docker-compose up -d (默认使用Nginx)
+
+services:
+  redflow-nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+      args:
+        - VERSION=2.3.9.2
+    image: redflow-nginx:2.3.9.2
+    container_name: redflow-nginx
+    ports:
+      - "${PORT:-8080}:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+
+
+

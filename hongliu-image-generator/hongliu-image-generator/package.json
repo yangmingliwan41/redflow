@@ -1,0 +1,74 @@
+{
+  "name": "@hongliu/image-generator",
+  "version": "1.0.0",
+  "description": "图片生成模块 - 提供AI图片生成的核心功能，支持风格转换、批量生成等",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./src/index.ts",
+      "types": "./src/index.ts"
+    },
+    "./src/core/api/imageApi": {
+      "import": "./src/core/api/imageApi.ts",
+      "require": "./src/core/api/imageApi.ts",
+      "types": "./src/core/api/imageApi.ts"
+    },
+    "./src/core/utils/imageUtils": {
+      "import": "./src/core/utils/imageUtils.ts",
+      "require": "./src/core/utils/imageUtils.ts",
+      "types": "./src/core/utils/imageUtils.ts"
+    },
+    "./src/core/config/stylePresets": {
+      "import": "./src/core/config/stylePresets.ts",
+      "require": "./src/core/config/stylePresets.ts",
+      "types": "./src/core/config/stylePresets.ts"
+    },
+    "./src/types": {
+      "import": "./src/types/index.ts",
+      "require": "./src/types/index.ts",
+      "types": "./src/types/index.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src --ext .ts,.tsx",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "image-generation",
+    "ai",
+    "gemini",
+    "image-processing",
+    "react",
+    "typescript"
+  ],
+  "author": "红流云创",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "axios": ">=1.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.13.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  }
+}
+

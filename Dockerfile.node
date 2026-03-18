@@ -1,0 +1,63 @@
+# 多阶段构建 - Node.js服务器部署
+# 红流云创 v2.3.9.2
+
+ARG VERSION=2.3.9.2
+
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# 先复制 hongliu-image-generator 依赖到正确位置（相对于 /app，即 /hongliu-image-generator/hongliu-image-generator）
+COPY hongliu-image-generator/hongliu-image-generator /hongliu-image-generator/hongliu-image-generator
+
+# 复制依赖文件
+COPY package*.json ./
+
+# 安装依赖（修复esbuild ETXTBSY错误）
+# 清理npm缓存，使用npm install代替npm ci，添加重试机制
+RUN npm cache clean --force && \
+    npm install --legacy-peer-deps --prefer-offline --no-audit || \
+    (sleep 2 && npm install --legacy-peer-deps --prefer-offline --no-audit) || \
+    (sleep 5 && npm install --legacy-peer-deps --prefer-offline --no-audit)
+
+# 复制源代码
+COPY . .
+
+# 构建应用
+RUN npm run build
+
+# 生产阶段 - Node.js
+FROM node:20-alpine
+
+ARG VERSION=2.3.9.2
+LABEL version="${VERSION}"
+LABEL maintainer="红流云创团队"
+
+WORKDIR /app
+
+# 先复制 hongliu-image-generator 依赖到正确位置（生产阶段也需要，因为npm install需要它）
+COPY hongliu-image-generator/hongliu-image-generator /hongliu-image-generator/hongliu-image-generator
+
+# 复制依赖文件
+COPY package*.json ./
+
+# 只安装生产依赖
+RUN npm cache clean --force && \
+    npm install --only=production --legacy-peer-deps --prefer-offline --no-audit || \
+    (sleep 2 && npm install --only=production --legacy-peer-deps --prefer-offline --no-audit)
+
+# 复制构建产物
+COPY --from=builder /app/dist ./dist
+
+# 复制服务器文件
+COPY server.js ./
+
+# 暴露端口
+EXPOSE 3000
+
+# 启动服务器
+CMD ["node", "server.js"]
+
+
+
+
