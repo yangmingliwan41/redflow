@@ -15,12 +15,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/redflow-v2.git"
+    "url": "https://github.com/yangmingliwan41/redflow.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/redflow-v2/issues"
+    "url": "https://github.com/yangmingliwan41/redflow/issues"
   },
-  "homepage": "https://github.com/your-username/redflow-v2#readme",
+  "homepage": "https://github.com/yangmingliwan41/redflow#readme",
   "private": false,
   "type": "module",
   "scripts": {
