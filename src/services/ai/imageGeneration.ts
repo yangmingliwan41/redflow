@@ -109,6 +109,42 @@ function buildNegativePrompt(style?: string): string {
       'emoji overload',
       'long paragraphs of text'
     )
+  } else if (style === 'diffuse_soft') {
+    baseNegative.push(
+      'sharp edges',
+      'hard lines',
+      'high contrast',
+      'crisp vector',
+      'clean flat blocks',
+      'neon',
+      'busy cluttered collage',
+      'photorealistic product hero',
+      'no grain'
+    )
+  } else if (style === 'collage_patch') {
+    baseNegative.push(
+      'seamless single photo',
+      'realistic perspective only',
+      'no borders',
+      'flat infographic',
+      'minimalist white only',
+      'muted dull palette',
+      'single plane depth'
+    )
+  } else if (style === 'real_scene_pure') {
+    baseNegative.push(
+      'cartoon',
+      'vector illustration',
+      'flat graphic design',
+      'anime',
+      '3d render look',
+      'sticker collage',
+      'neon cyberpunk',
+      'abstract gradient poster',
+      'oversaturated HDR',
+      'plastic skin',
+      'heavy lens flare abuse'
+    )
   } else if (style === 'tech_future') {
     baseNegative.push(
       'warm tones',

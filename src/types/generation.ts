@@ -23,7 +23,7 @@ export interface GenerationSettings {
   length: 'short' | 'medium' | 'long';
   style: 'xiaohongshu' | 'wechat' | 'instagram';
   copyStyle: 'storytelling' | 'sales_driven' | 'minimalist';
-  imageStyle: 'ins_minimal' | 'muji_minimal' | 'simple_doodle' | 'dopamine' | 'luxury' | 'poster' | 'tech_future' | 'nature_fresh' | 'warm_home' | 'cream_ins' | 'furniture_size' | 'japanese_wood' | 'none';
+  imageStyle: 'ins_minimal' | 'muji_minimal' | 'simple_doodle' | 'diffuse_soft' | 'collage_patch' | 'real_scene_pure' | 'dopamine' | 'luxury' | 'poster' | 'tech_future' | 'nature_fresh' | 'warm_home' | 'cream_ins' | 'furniture_size' | 'japanese_wood' | 'none';
   brightness: number;
   additionalContext: string;
   customPrompts: {
@@ -96,6 +96,9 @@ export const IMAGE_STYLE_OPTIONS = [
   { value: 'ins_minimal', label: 'INS极简风' },
   { value: 'muji_minimal', label: '无印良品风' },
   { value: 'simple_doodle', label: '简笔画风' },
+  { value: 'diffuse_soft', label: '弥散风格' },
+  { value: 'collage_patch', label: '拼接风格' },
+  { value: 'real_scene_pure', label: '实景纯图风' },
   { value: 'dopamine', label: '多巴胺风格' },
   { value: 'luxury', label: '奢华风格' },
   { value: 'poster', label: '海报风格' },

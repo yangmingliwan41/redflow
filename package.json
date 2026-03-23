@@ -1,6 +1,6 @@
 {
   "name": "redflow-v2",
-  "version": "2.3.10.0",
+  "version": "2.3.11.0",
   "description": "AI驱动的图文创作助手，支持文本生成图文和图生图功能",
   "keywords": [
     "vue3",

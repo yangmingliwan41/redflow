@@ -40,7 +40,7 @@ export async function analyzeProductImage(
   "recommendation": {
     "tone": "enthusiastic|professional|emotional|minimalist",
     "copyStyle": "storytelling|sales_driven|minimalist",
-    "imageStyle": "ins_minimal|muji_minimal|simple_doodle|dopamine|luxury|poster|tech_future|nature_fresh|warm_home|cream_ins|furniture_size|japanese_wood"
+    "imageStyle": "ins_minimal|muji_minimal|simple_doodle|diffuse_soft|collage_patch|real_scene_pure|dopamine|luxury|poster|tech_future|nature_fresh|warm_home|cream_ins|furniture_size|japanese_wood"
   }
 }`
 
